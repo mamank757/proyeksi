@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proyeksi Curah Hujan Dasarian — Metode Poisson × ENSO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B1220;
+    --bg2:#0E1830;
+    --elev:#141F3B;
+    --elev2:#1B2A4D;
+    --line:#28395F;
+    --ink:#EAEEF9;
+    --ink-muted:#8DA0C7;
+    --ink-dim:#5D6E93;
+    --dry:#E3A857;
+    --dry-dim:#B9873F;
+    --wet:#39B7A6;
+    --wet-dim:#2C8F82;
+    --neutral:#7387B8;
+    --grid:#1D2C4E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(57,183,166,0.10), transparent 60%),
+      radial-gradient(ellipse 800px 500px at 100% 0%, rgba(227,168,87,0.08), transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:44px 28px 90px;}
+
+  /* ---------- HERO ---------- */
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--wet);display:flex;align-items:center;gap:10px;margin-bottom:18px;
+  }
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--wet);box-shadow:0 0 10px var(--wet);animation:pulse 2.4s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(32px,4.6vw,54px);
+    line-height:1.04;
+    margin:0 0 14px;
+    letter-spacing:-0.01em;
+  }
+  h1 em{font-style:italic;font-weight:500;color:var(--dry);}
+  .sub{font-size:15.5px;color:var(--ink-muted);max-width:640px;line-height:1.6;margin-bottom:36px;}
+
+  .hero-stats{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    margin-bottom:40px;
+  }
+  .stat{background:var(--elev);padding:20px 22px;}
+  .stat .label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-dim);margin-bottom:8px;}
+  .stat .value{font-family:'Fraunces',serif;font-size:28px;font-weight:600;line-height:1;}
+  .stat .value small{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--ink-muted);margin-left:4px;}
+  .stat .delta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;margin-top:8px;}
+  .delta.down{color:var(--dry);}
+  .delta.up{color:var(--wet);}
+  .delta.flat{color:var(--neutral);}
+
+  /* ---------- SECTION LABELS ---------- */
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:56px 0 18px;}
+  .section-head .num{font-family:'IBM Plex Mono',monospace;color:var(--ink-dim);font-size:12px;}
+  .section-head h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin:0;}
+  .section-head .line{flex:1;height:1px;background:var(--line);}
+  .section-desc{color:var(--ink-muted);font-size:14px;line-height:1.6;max-width:680px;margin-bottom:22px;}
+
+  /* ---------- ENSO CONTROL DECK ---------- */
+  .deck{
+    background:var(--elev);border:1px solid var(--line);border-radius:14px;
+    padding:22px 22px 14px;
+  }
+  .deck-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+  .deck-top .tag{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-dim);}
+  .btn-reset{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;
+    background:var(--elev2);border:1px solid var(--line);color:var(--ink-muted);
+    padding:7px 13px;border-radius:8px;cursor:pointer;transition:.15s;
+  }
+  .btn-reset:hover{color:var(--ink);border-color:var(--wet-dim);}
+
+  .sliders{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:6px;}
+  .slider-cell{display:flex;flex-direction:column;align-items:center;padding:10px 4px 12px;border-radius:10px;transition:.15s;}
+  .slider-cell:hover{background:var(--elev2);}
+  .slider-cell .m{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-dim);letter-spacing:.06em;margin-bottom:8px;}
+  .slider-cell .v{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;margin-top:8px;}
+  .slider-cell input[type=range]{
+    writing-mode:vertical-lr;direction:rtl;
+    width:6px;height:86px;-webkit-appearance:none;appearance:none;
+    background:linear-gradient(to top, var(--wet-dim), var(--grid) 50%, var(--dry-dim));
+    border-radius:6px;outline:none;cursor:ns-resize;
+  }
+  .slider-cell input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:16px;height:9px;border-radius:3px;
+    background:var(--ink);cursor:ns-resize;border:2px solid var(--bg2);
+  }
+
+  /* ---------- CHART ---------- */
+  .chart-card{
+    background:var(--elev);border:1px solid var(--line);border-radius:14px;
+    padding:24px 24px 8px;
+  }
+  .legend{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-muted);}
+  .legend span{display:inline-flex;align-items:center;gap:7px;}
+  .sw{width:10px;height:10px;border-radius:2px;display:inline-block;}
+  #chartSvg{width:100%;height:auto;display:block;}
+  .bar{transition:height .35s ease, y .35s ease, fill .35s ease;}
+  .bar:hover{filter:brightness(1.25);}
+  .baseline-tick{stroke:#4C5C86;stroke-width:1.4;stroke-dasharray:2 2;}
+  .enso-line{fill:none;stroke:var(--dry);stroke-width:2;opacity:.85;}
+  .enso-dot{fill:var(--dry);}
+  .axis-label{font-family:'IBM Plex Mono',monospace;font-size:9.5px;fill:var(--ink-dim);}
+  .month-label{font-family:'IBM Plex Mono',monospace;font-size:10px;fill:var(--ink-muted);}
+  .tooltip{
+    position:absolute;pointer-events:none;background:var(--bg2);border:1px solid var(--line);
+    border-radius:8px;padding:9px 12px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+    line-height:1.6;color:var(--ink);opacity:0;transition:opacity .12s;white-space:nowrap;z-index:10;
+    box-shadow:0 8px 24px rgba(0,0,0,.4);
+  }
+  .tooltip b{color:var(--dry);}
+
+  /* ---------- TABLE ---------- */
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--elev);}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:820px;}
+  thead th{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--ink-dim);text-align:left;padding:13px 14px;border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:var(--elev);
+  }
+  tbody td{padding:10px 14px;border-bottom:1px solid var(--grid);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink);}
+  tbody tr:hover{background:var(--elev2);}
+  tbody tr:last-child td{border-bottom:none;}
+  .cat{padding:3px 9px;border-radius:20px;font-size:10.5px;letter-spacing:.03em;display:inline-block;}
+  .cat.bn{background:rgba(227,168,87,.16);color:var(--dry);}
+  .cat.n{background:rgba(115,135,184,.18);color:#A9BAE0;}
+  .cat.an{background:rgba(57,183,166,.16);color:var(--wet);}
+  .month-divider td{border-top:1px solid var(--line);}
+
+  /* ---------- METHODOLOGY ---------- */
+  .method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .method-card{background:var(--elev);padding:22px;}
+  .method-card .mi{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--wet);margin-bottom:10px;}
+  .method-card h3{font-family:'Fraunces',serif;font-size:16px;font-weight:600;margin:0 0 8px;}
+  .method-card p{font-size:13px;color:var(--ink-muted);line-height:1.6;margin:0;}
+  .formula{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--bg2);
+    border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-top:12px;color:#C9D4EE;
+    overflow-x:auto;
+  }
+
+  .caveat{
+    margin-top:20px;padding:18px 20px;border-radius:12px;
+    background:rgba(227,168,87,.07);border:1px solid rgba(227,168,87,.28);
+    font-size:13px;color:#D8C4A0;line-height:1.65;
+  }
+  .caveat b{color:var(--dry);}
+
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--line);
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+
+  @media (max-width:720px){
+    .hero-stats{grid-template-columns:1fr 1fr;}
+    .method-grid{grid-template-columns:1fr;}
+    .sliders{grid-template-columns:repeat(4,1fr);}
+  }
+  ::-webkit-scrollbar{height:8px;width:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow"><span class="dot"></span>STASIUN ANALISIS · AGU 2026 – JUL 2027</div>
+  <h1>Proyeksi curah hujan dasarian,<br><em>dikoreksi ENSO</em> lewat distribusi Poisson.</h1>
+  <p class="sub">36 periode dasarian diproyeksikan dari baseline klimatologi, dikoreksi indeks Niño3.4 yang bisa Anda ubah sendiri di panel bawah. Setiap sentuhan slider menghitung ulang seluruh grafik dan tabel secara langsung.</p>
+
+  <div class="hero-stats" id="heroStats"></div>
+
+  <div class="section-head"><span class="num">01</span><h2>Skenario indeks ENSO</h2><span class="line"></span></div>
+  <p class="section-desc">Nilai awal = komposit 5 tahun analog historis (episode El Niño kuat 1987/97/2002/15/23) yang digeser ke level aktual 2026. Geser slider untuk menguji skenario Anda sendiri — misalnya bila ada update outlook BMKG/NOAA CPC terbaru.</p>
+  <div class="deck">
+    <div class="deck-top">
+      <span class="tag">°C ANOMALI SST NIÑO3.4 &nbsp;·&nbsp; RENTANG −2.0 s/d +3.0</span>
+      <button class="btn-reset" id="resetBtn">↺ RESET KE SKENARIO DASAR</button>
+    </div>
+    <div class="sliders" id="sliderDeck"></div>
+  </div>
+
+  <div class="section-head"><span class="num">02</span><h2>Hyetograph proyeksi</h2><span class="line"></span></div>
+  <p class="section-desc">Batang = proyeksi curah hujan tiap dasarian (mm). Garis putus baseline menandai klimatologi. Garis atas = indeks ENSO bulanan yang sedang dipakai.</p>
+  <div class="chart-card">
+    <div class="legend">
+      <span><i class="sw" style="background:var(--dry)"></i>Bawah Normal (BN)</span>
+      <span><i class="sw" style="background:var(--neutral)"></i>Normal (N)</span>
+      <span><i class="sw" style="background:var(--wet)"></i>Atas Normal (AN)</span>
+      <span><i class="sw" style="background:var(--dry);border-radius:50%"></i>Indeks ENSO</span>
+      <span><i class="sw" style="background:transparent;border-top:2px dashed #4C5C86"></i>Baseline</span>
+    </div>
+    <svg id="chartSvg" viewBox="0 0 1080 420" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div class="tooltip" id="tooltip"></div>
+
+  <div class="section-head"><span class="num">03</span><h2>Rincian 36 dasarian</h2><span class="line"></span></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Periode</th><th>Baseline</th><th>Indeks ENSO</th><th>Faktor koreksi</th>
+        <th>λ terkoreksi</th><th>Proyeksi</th><th>P10–P90</th><th>Kategori</th>
+      </tr></thead>
+      <tbody id="tblBody"></tbody>
+    </table>
+  </div>
+
+  <div class="section-head"><span class="num">04</span><h2>Metodologi</h2><span class="line"></span></div>
+  <div class="method-grid">
+    <div class="method-card">
+      <div class="mi">01 — BASELINE</div>
+      <h3>λ₀ dasarian</h3>
+      <p>Rerata klimatologi tiap dasarian (36 periode) dari file baseline Anda dipakai sebagai parameter dasar Poisson.</p>
+    </div>
+    <div class="method-card">
+      <div class="mi">02 — KOREKSI ENSO</div>
+      <h3>Faktor koreksi</h3>
+      <p>Indeks ENSO bulanan dikalikan sensitivitas musiman k (lebih besar saat puncak kemarau), menggeser λ naik/turun.</p>
+      <div class="formula">koreksi = 1 − (k × ENSO)<br>λ' = MAX(λ₀×0.25, λ₀×koreksi)</div>
+    </div>
+    <div class="method-card">
+      <div class="mi">03 — DISTRIBUSI POISSON</div>
+      <h3>Proyeksi & selang</h3>
+      <p>λ' jadi parameter Poisson. Nilai ekspektasi = λ'. Selang P10–P90 didekati normal karena λ cukup besar.</p>
+      <div class="formula">P10 = λ' − 1.2816×√λ'<br>P90 = λ' + 1.2816×√λ'</div>
+    </div>
+  </div>
+
+  <div class="caveat">
+    <b>Keterbatasan yang jujur harus disampaikan:</b> skenario ENSO awal bukan forecast resmi — ini komposit analog historis yang digeser mengikuti level aktual 2026, yang kenaikannya melampaui seluruh 44 tahun data historis yang tersedia. Faktor sensitivitas k bersifat umum/indikatif karena baseline yang tersedia hanya klimatologi 1 tahun (bukan deret panjang), sehingga korelasi ENSO–hujan tak bisa dihitung langsung dari data ini. Gunakan slider di atas untuk menyesuaikan begitu ada outlook resmi terbaru dari BMKG / NOAA CPC / IRI Columbia.
+  </div>
+
+  <footer>
+    <span>METODE: DISTRIBUSI POISSON × KOREKSI ENSO NIÑO3.4</span>
+    <span>SUMBER: BASELINE_CURAH_HUJAN_DASARIAN.XLSX · DATA_ENSO.XLSX</span>
+  </footer>
+</div>
+
+<script>
+const DATA = {
+  dasarianData: [{"bulan": "AGU", "bulanFull": "Agustus", "tahun": 2026, "dasarian": "I", "baseline": 25, "sensDefault": 0.2}, {"bulan": "AGU", "bulanFull": "Agustus", "tahun": 2026, "dasarian": "II", "baseline": 21, "sensDefault": 0.2}, {"bulan": "AGU", "bulanFull": "Agustus", "tahun": 2026, "dasarian": "III", "baseline": 22, "sensDefault": 0.2}, {"bulan": "SEP", "bulanFull": "September", "tahun": 2026, "dasarian": "I", "baseline": 23, "sensDefault": 0.2}, {"bulan": "SEP", "bulanFull": "September", "tahun": 2026, "dasarian": "II", "baseline": 18, "sensDefault": 0.2}, {"bulan": "SEP", "bulanFull": "September", "tahun": 2026, "dasarian": "III", "baseline": 27, "sensDefault": 0.2}, {"bulan": "OKT", "bulanFull": "Oktober", "tahun": 2026, "dasarian": "I", "baseline": 37, "sensDefault": 0.18}, {"bulan": "OKT", "bulanFull": "Oktober", "tahun": 2026, "dasarian": "II", "baseline": 33, "sensDefault": 0.18}, {"bulan": "OKT", "bulanFull": "Oktober", "tahun": 2026, "dasarian": "III", "baseline": 41, "sensDefault": 0.18}, {"bulan": "NOV", "bulanFull": "November", "tahun": 2026, "dasarian": "I", "baseline": 48, "sensDefault": 0.12}, {"bulan": "NOV", "bulanFull": "November", "tahun": 2026, "dasarian": "II", "baseline": 47, "sensDefault": 0.12}, {"bulan": "NOV", "bulanFull": "November", "tahun": 2026, "dasarian": "III", "baseline": 53, "sensDefault": 0.12}, {"bulan": "DES", "bulanFull": "Desember", "tahun": 2026, "dasarian": "I", "baseline": 45, "sensDefault": 0.07}, {"bulan": "DES", "bulanFull": "Desember", "tahun": 2026, "dasarian": "II", "baseline": 38, "sensDefault": 0.07}, {"bulan": "DES", "bulanFull": "Desember", "tahun": 2026, "dasarian": "III", "baseline": 55, "sensDefault": 0.07}, {"bulan": "JAN", "bulanFull": "Januari", "tahun": 2027, "dasarian": "I", "baseline": 41, "sensDefault": 0.05}, {"bulan": "JAN", "bulanFull": "Januari", "tahun": 2027, "dasarian": "II", "baseline": 34, "sensDefault": 0.05}, {"bulan": "JAN", "bulanFull": "Januari", "tahun": 2027, "dasarian": "III", "baseline": 39, "sensDefault": 0.05}, {"bulan": "FEB", "bulanFull": "Februari", "tahun": 2027, "dasarian": "I", "baseline": 31, "sensDefault": 0.05}, {"bulan": "FEB", "bulanFull": "Februari", "tahun": 2027, "dasarian": "II", "baseline": 35, "sensDefault": 0.05}, {"bulan": "FEB", "bulanFull": "Februari", "tahun": 2027, "dasarian": "III", "baseline": 31, "sensDefault": 0.05}, {"bulan": "MAR", "bulanFull": "Maret", "tahun": 2027, "dasarian": "I", "baseline": 34, "sensDefault": 0.07}, {"bulan": "MAR", "bulanFull": "Maret", "tahun": 2027, "dasarian": "II", "baseline": 44, "sensDefault": 0.07}, {"bulan": "MAR", "bulanFull": "Maret", "tahun": 2027, "dasarian": "III", "baseline": 57, "sensDefault": 0.07}, {"bulan": "APR", "bulanFull": "April", "tahun": 2027, "dasarian": "I", "baseline": 60, "sensDefault": 0.08}, {"bulan": "APR", "bulanFull": "April", "tahun": 2027, "dasarian": "II", "baseline": 71, "sensDefault": 0.08}, {"bulan": "APR", "bulanFull": "April", "tahun": 2027, "dasarian": "III", "baseline": 89, "sensDefault": 0.08}, {"bulan": "MEI", "bulanFull": "Mei", "tahun": 2027, "dasarian": "I", "baseline": 107, "sensDefault": 0.1}, {"bulan": "MEI", "bulanFull": "Mei", "tahun": 2027, "dasarian": "II", "baseline": 79, "sensDefault": 0.1}, {"bulan": "MEI", "bulanFull": "Mei", "tahun": 2027, "dasarian": "III", "baseline": 101, "sensDefault": 0.1}, {"bulan": "JUN", "bulanFull": "Juni", "tahun": 2027, "dasarian": "I", "baseline": 100, "sensDefault": 0.15}, {"bulan": "JUN", "bulanFull": "Juni", "tahun": 2027, "dasarian": "II", "baseline": 91, "sensDefault": 0.15}, {"bulan": "JUN", "bulanFull": "Juni", "tahun": 2027, "dasarian": "III", "baseline": 73, "sensDefault": 0.15}, {"bulan": "JUL", "bulanFull": "Juli", "tahun": 2027, "dasarian": "I", "baseline": 74, "sensDefault": 0.18}, {"bulan": "JUL", "bulanFull": "Juli", "tahun": 2027, "dasarian": "II", "baseline": 66, "sensDefault": 0.18}, {"bulan": "JUL", "bulanFull": "Juli", "tahun": 2027, "dasarian": "III", "baseline": 41, "sensDefault": 0.18}],
+  monthsProj: [{"m": "AGU", "full": "Agustus", "year": 2026, "enso": 2.0}, {"m": "SEP", "full": "September", "year": 2026, "enso": 2.17}, {"m": "OKT", "full": "Oktober", "year": 2026, "enso": 2.22}, {"m": "NOV", "full": "November", "year": 2026, "enso": 2.47}, {"m": "DES", "full": "Desember", "year": 2026, "enso": 2.39}, {"m": "JAN", "full": "Januari", "year": 2027, "enso": 2.28}, {"m": "FEB", "full": "Februari", "year": 2027, "enso": 1.96}, {"m": "MAR", "full": "Maret", "year": 2027, "enso": 1.56}, {"m": "APR", "full": "April", "year": 2027, "enso": 0.99}, {"m": "MEI", "full": "Mei", "year": 2027, "enso": 0.41}, {"m": "JUN", "full": "Juni", "year": 2027, "enso": 0.1}, {"m": "JUL", "full": "Juli", "year": 2027, "enso": -0.03}],
+};
+
+const MONTH_ORDER = DATA.monthsProj.map(m=>m.m);
+let ensoState = {};
+DATA.monthsProj.forEach(m=> ensoState[m.m] = m.enso);
+const ensoDefault = {...ensoState};
+
+const catColor = {bn: 'var(--dry)', n: 'var(--neutral)', an: 'var(--wet)'};
+const catColorHex = {bn:'#E3A857', n:'#7387B8', an:'#39B7A6'};
+
+function computeRow(d){
+  const enso = ensoState[d.bulan];
+  const k = d.sensDefault;
+  const koreksi = 1 - (k*enso);
+  const lambda = Math.max(d.baseline*0.25, d.baseline*koreksi);
+  const proj = Math.round(lambda);
+  const p10 = Math.max(0, Math.round(lambda - 1.2816*Math.sqrt(lambda)));
+  const p90 = Math.round(lambda + 1.2816*Math.sqrt(lambda));
+  const ratio = proj/d.baseline;
+  let cat = 'n', catLabel='Normal (N)';
+  if(ratio < 0.85){cat='bn'; catLabel='Bawah Normal (BN)';}
+  else if(ratio > 1.15){cat='an'; catLabel='Atas Normal (AN)';}
+  return {...d, enso, k, koreksi, lambda, proj, p10, p90, cat, catLabel};
+}
+
+function fmt1(x){ return (Math.round(x*10)/10).toFixed(1); }
+
+function render(){
+  const rows = DATA.dasarianData.map(computeRow);
+  renderHero(rows);
+  renderSliders();
+  renderChart(rows);
+  renderTable(rows);
+}
+
+function renderHero(rows){
+  const totalBaseline = rows.reduce((s,r)=>s+r.baseline,0);
+  const totalProj = rows.reduce((s,r)=>s+r.proj,0);
+  const delta = totalProj - totalBaseline;
+  const pct = (delta/totalBaseline*100);
+  const currentEnso = ensoState['AGU'];
+  const phase = currentEnso>=0.5?'El Niño':currentEnso<=-0.5?'La Niña':'Netral';
+  const bnCount = rows.filter(r=>r.cat==='bn').length;
+  const anCount = rows.filter(r=>r.cat==='an').length;
+
+  const stats = [
+    {label:'TOTAL BASELINE', value:totalBaseline.toLocaleString('id-ID'), unit:'mm'},
+    {label:'TOTAL PROYEKSI', value:totalProj.toLocaleString('id-ID'), unit:'mm',
+      delta:`${delta>=0?'▲':'▼'} ${Math.abs(pct).toFixed(1)}% dari baseline`, deltaClass: delta<0?'down':delta>0?'up':'flat'},
+    {label:'FASE ENSO (AGU)', value:phase, unit:'', delta:`indeks ${fmt1(currentEnso)} °C`, deltaClass:'flat'},
+    {label:'SEBARAN KATEGORI', value:`${bnCount} BN`, unit:`/ ${anCount} AN / ${rows.length-bnCount-anCount} N`, deltaClass:'flat'},
+  ];
+  document.getElementById('heroStats').innerHTML = stats.map(s=>`
+    <div class="stat">
+      <div class="label">${s.label}</div>
+      <div class="value">${s.value}<small>${s.unit}</small></div>
+      ${s.delta? `<div class="delta ${s.deltaClass}">${s.delta}</div>`:''}
+    </div>`).join('');
+}
+
+function renderSliders(){
+  const deck = document.getElementById('sliderDeck');
+  deck.innerHTML = DATA.monthsProj.map(m=>{
+    const val = ensoState[m.m];
+    const pct = ((val+2)/5)*100; // range -2..3
+    return `
+    <div class="slider-cell">
+      <div class="m">${m.m} ${String(m.year).slice(2)}</div>
+      <input type="range" min="-2" max="3" step="0.1" value="${val}" data-month="${m.m}" style="--val:${pct}%">
+      <div class="v">${fmt1(val)}</div>
+    </div>`;
+  }).join('');
+  deck.querySelectorAll('input[type=range]').forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      ensoState[e.target.dataset.month] = parseFloat(e.target.value);
+      render();
+    });
+  });
+}
+
+const svgNS = "http://www.w3.org/2000/svg";
+function renderChart(rows){
+  const svg = document.getElementById('chartSvg');
+  svg.innerHTML = '';
+  const W = 1080, H = 420;
+  const padL=40, padR=20, padT=50, padB=44;
+  const plotW = W-padL-padR, plotH = H-padT-padB;
+  const n = rows.length;
+  const gap = 4;
+  const barW = (plotW - gap*(n-1))/n;
+  const maxVal = Math.max(...rows.map(r=>Math.max(r.p90, r.baseline))) * 1.08;
+
+  // grid lines
+  const gridSteps = 5;
+  for(let i=0;i<=gridSteps;i++){
+    const y = padT + plotH - (plotH*i/gridSteps);
+    const val = Math.round(maxVal*i/gridSteps);
+    const line = document.createElementNS(svgNS,'line');
+    line.setAttribute('x1',padL); line.setAttribute('x2', W-padR);
+    line.setAttribute('y1',y); line.setAttribute('y2',y);
+    line.setAttribute('stroke','var(--grid)'); line.setAttribute('stroke-width','1');
+    svg.appendChild(line);
+    const txt = document.createElementNS(svgNS,'text');
+    txt.setAttribute('x', padL-8); txt.setAttribute('y', y+3);
+    txt.setAttribute('text-anchor','end'); txt.setAttribute('class','axis-label');
+    txt.textContent = val;
+    svg.appendChild(txt);
+  }
+
+  const tooltip = document.getElementById('tooltip');
+  const chartCard = document.querySelector('.chart-card');
+
+  rows.forEach((r,i)=>{
+    const x = padL + i*(barW+gap);
+    const barH = (r.proj/maxVal)*plotH;
+    const y = padT + plotH - barH;
+
+    // P10-P90 whisker
+    const yP10 = padT + plotH - (r.p10/maxVal)*plotH;
+    const yP90 = padT + plotH - (r.p90/maxVal)*plotH;
+    const whisker = document.createElementNS(svgNS,'line');
+    whisker.setAttribute('x1', x+barW/2); whisker.setAttribute('x2', x+barW/2);
+    whisker.setAttribute('y1', yP90); whisker.setAttribute('y2', yP10);
+    whisker.setAttribute('stroke', '#3A4A72'); whisker.setAttribute('stroke-width','1.6');
+    svg.appendChild(whisker);
+
+    // bar
+    const rect = document.createElementNS(svgNS,'rect');
+    rect.setAttribute('x', x); rect.setAttribute('y', y);
+    rect.setAttribute('width', barW); rect.setAttribute('height', Math.max(barH,1.5));
+    rect.setAttribute('rx', 2);
+    rect.setAttribute('fill', catColorHex[r.cat]);
+    rect.setAttribute('class','bar');
+    rect.addEventListener('mousemove', (e)=>{
+      const rect0 = chartCard.getBoundingClientRect();
+      tooltip.style.left = (e.clientX-rect0.left+14)+'px';
+      tooltip.style.top = (e.clientY-rect0.top-10)+'px';
+      tooltip.style.opacity = 1;
+      tooltip.innerHTML = `<b>${r.bulan} ${r.dasarian} ${r.tahun}</b><br>
+        Baseline: ${r.baseline} mm<br>
+        Proyeksi: <b>${r.proj} mm</b><br>
+        P10–P90: ${r.p10}–${r.p90} mm<br>
+        ENSO: ${fmt1(r.enso)}°C · ${r.catLabel}`;
+    });
+    rect.addEventListener('mouseleave', ()=> tooltip.style.opacity=0);
+    svg.appendChild(rect);
+
+    // baseline tick
+    const ybase = padT + plotH - (r.baseline/maxVal)*plotH;
+    const tick = document.createElementNS(svgNS,'line');
+    tick.setAttribute('x1', x-1); tick.setAttribute('x2', x+barW+1);
+    tick.setAttribute('y1', ybase); tick.setAttribute('y2', ybase);
+    tick.setAttribute('class','baseline-tick');
+    svg.appendChild(tick);
+  });
+
+  // ENSO line overlay (own scale -2..3 mapped to top strip of chart, padT-30..padT)
+  const ensoTop = 14, ensoBottom = padT-8;
+  const ensoScale = v => ensoBottom - ((v+2)/5)*(ensoBottom-ensoTop);
+  let pathD = '';
+  rows.forEach((r,i)=>{
+    const x = padL + i*(barW+gap) + barW/2;
+    const y = ensoScale(r.enso);
+    pathD += (i===0?'M':'L') + x + ' ' + y + ' ';
+  });
+  const path = document.createElementNS(svgNS,'path');
+  path.setAttribute('d', pathD);
+  path.setAttribute('class','enso-line');
+  svg.appendChild(path);
+  rows.forEach((r,i)=>{
+    const x = padL + i*(barW+gap) + barW/2;
+    const y = ensoScale(r.enso);
+    if(i%3===1){
+      const dot = document.createElementNS(svgNS,'circle');
+      dot.setAttribute('cx',x); dot.setAttribute('cy',y); dot.setAttribute('r',2.6);
+      dot.setAttribute('class','enso-dot');
+      svg.appendChild(dot);
+    }
+  });
+
+  // month labels (centered under each month's 3 bars)
+  DATA.monthsProj.forEach((m,mi)=>{
+    const x = padL + (mi*3+1)*(barW+gap) + barW/2;
+    const txt = document.createElementNS(svgNS,'text');
+    txt.setAttribute('x', x); txt.setAttribute('y', H-padB+18);
+    txt.setAttribute('text-anchor','middle'); txt.setAttribute('class','month-label');
+    txt.textContent = m.m;
+    svg.appendChild(txt);
+  });
+}
+
+function renderTable(rows){
+  const tbody = document.getElementById('tblBody');
+  let html = '';
+  let lastMonth = null;
+  rows.forEach(r=>{
+    const divider = r.bulan!==lastMonth ? ' month-divider' : '';
+    lastMonth = r.bulan;
+    html += `<tr class="${divider.trim()}">
+      <td>${r.bulan} ${r.dasarian} ${r.tahun}</td>
+      <td>${r.baseline} mm</td>
+      <td>${fmt1(r.enso)} °C</td>
+      <td>${fmt1(r.koreksi)}</td>
+      <td>${fmt1(r.lambda)} mm</td>
+      <td><b>${r.proj} mm</b></td>
+      <td>${r.p10}–${r.p90} mm</td>
+      <td><span class="cat ${r.cat}">${r.catLabel}</span></td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+}
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  ensoState = {...ensoDefault};
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
