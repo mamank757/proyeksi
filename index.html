@@ -1,342 +1,166 @@
 <!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Proyeksi Curah Hujan Dasarian — Poisson × ENSO (NOAA otomatis)</title>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Proyeksi Hujan Dasarian ZOM 566 / Wajo — ENSO log-linear × Gamma</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0B1220;--bg2:#0E1830;--elev:#141F3B;--elev2:#1B2A4D;--line:#28395F;--ink:#EAEEF9;--ink-muted:#8DA0C7;--ink-dim:#5D6E93;--dry:#E3A857;--wet:#39B7A6;--wet-dim:#2C8F82;--dry-dim:#B9873F;--neutral:#7387B8;--grid:#1D2C4E;}
-*{box-sizing:border-box}html,body{margin:0;padding:0}
-body{background:radial-gradient(ellipse 900px 500px at 15% -10%,rgba(57,183,166,.10),transparent 60%),radial-gradient(ellipse 800px 500px at 100% 0,rgba(227,168,87,.08),transparent 55%),var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
-.wrap{max-width:1180px;margin:0 auto;padding:44px 28px 90px}
-.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--wet);display:flex;align-items:center;gap:10px;margin-bottom:18px}
-.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--wet);box-shadow:0 0 10px var(--wet);animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(32px,4.6vw,54px);line-height:1.04;margin:0 0 14px;letter-spacing:-.01em}
-h1 em{font-style:italic;font-weight:400;color:var(--dry)}
-.sub{font-size:15.5px;color:var(--ink-muted);max-width:660px;line-height:1.6;margin-bottom:36px}
-.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:40px}
-.stat{background:var(--elev);padding:20px 22px}
-.stat .label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-dim);margin-bottom:8px}
-.stat .value{font-family:'Fraunces',serif;font-size:28px;font-weight:600;line-height:1}
-.stat .value small{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--ink-muted);margin-left:4px}
-.stat .delta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;margin-top:8px}
-.delta.down{color:var(--dry)}.delta.up{color:var(--wet)}.delta.flat{color:var(--neutral)}
-.section-head{display:flex;align-items:baseline;gap:12px;margin:56px 0 18px}
-.section-head .num{font-family:'IBM Plex Mono',monospace;color:var(--ink-dim);font-size:12px}
-.section-head h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin:0}
-.section-head .line{flex:1;height:1px;background:var(--line)}
-.section-desc{color:var(--ink-muted);font-size:14px;line-height:1.6;max-width:700px;margin-bottom:22px}
-.deck{background:var(--elev);border:1px solid var(--line);border-radius:14px;padding:22px 22px 14px}
-.deck-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px}
-.btns{display:flex;gap:8px;flex-wrap:wrap}
-.btn{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;background:var(--elev2);border:1px solid var(--line);color:var(--ink-muted);padding:7px 13px;border-radius:8px;cursor:pointer;transition:.15s}
-.btn:hover{color:var(--ink);border-color:var(--wet-dim)}.btn.on{color:var(--dry);border-color:var(--dry-dim)}
-.status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-muted);line-height:1.5}
-.badge{padding:3px 10px;border-radius:20px;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
-.badge.load{background:rgba(115,135,184,.2);color:#A9BAE0}.badge.live{background:rgba(57,183,166,.18);color:var(--wet)}
-.badge.cache,.badge.snap{background:rgba(227,168,87,.18);color:var(--dry)}
-.statusmsg{font-size:11.5px;color:var(--ink-dim);margin:0 0 16px;font-family:'IBM Plex Mono',monospace;line-height:1.55}
-.sliders{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:6px}
-.slider-cell{display:flex;flex-direction:column;align-items:center;padding:10px 4px 12px;border-radius:10px}
-.slider-cell .m{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-dim);letter-spacing:.06em;margin-bottom:8px}
-.slider-cell .v{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;margin-top:8px}
-.slider-cell .src{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.08em;margin-top:5px;padding:1px 6px;border-radius:10px}
-.src.obs{background:rgba(57,183,166,.18);color:var(--wet)}.src.pro{background:rgba(115,135,184,.2);color:#A9BAE0}.src.mtd{background:rgba(57,183,166,.1);color:#7fd6c9}.src.fc{background:rgba(227,168,87,.18);color:var(--dry)}.src.stat{background:rgba(115,135,184,.28);color:#C9D4EE}.src.man{background:rgba(227,168,87,.18);color:var(--dry)}
-.slider-cell input[type=range]{writing-mode:vertical-lr;direction:rtl;width:6px;height:86px;-webkit-appearance:none;appearance:none;background:linear-gradient(to top,var(--wet-dim),var(--grid) 50%,var(--dry-dim));border-radius:6px;outline:none;cursor:ns-resize}
-.slider-cell input[type=range]:disabled{opacity:.45;cursor:not-allowed}
-.slider-cell input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:9px;border-radius:3px;background:var(--ink);border:2px solid var(--bg2)}
-.chart-card{background:var(--elev);border:1px solid var(--line);border-radius:14px;padding:24px 24px 8px;position:relative}
-.legend{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-muted)}
-.legend span{display:inline-flex;align-items:center;gap:7px}.sw{width:10px;height:10px;border-radius:2px;display:inline-block}
-#chartSvg{width:100%;height:auto;display:block}
-.bar{transition:height .35s ease,y .35s ease,fill .35s ease}.bar:hover{filter:brightness(1.25)}
-.baseline-tick{stroke:#4C5C86;stroke-width:1.4;stroke-dasharray:2 2}
-.enso-line{fill:none;stroke:var(--dry);stroke-width:2;opacity:.85}.enso-dot{fill:var(--dry)}
-.axis-label{font-family:'IBM Plex Mono',monospace;font-size:9.5px;fill:var(--ink-dim)}
-.month-label{font-family:'IBM Plex Mono',monospace;font-size:10px;fill:var(--ink-muted)}
-.tooltip{position:absolute;pointer-events:none;background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.6;color:var(--ink);opacity:0;transition:opacity .12s;white-space:nowrap;z-index:10;box-shadow:0 8px 24px rgba(0,0,0,.4)}
-.tooltip b{color:var(--dry)}
-.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--elev)}
-table{width:100%;border-collapse:collapse;font-size:11px;min-width:820px}
-thead th{font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim);text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);background:var(--elev)}
-tbody td{padding:7px 10px;border-bottom:1px solid var(--grid);font-family:'IBM Plex Mono',monospace;font-size:11px}
-tbody tr:hover{background:var(--elev2)}tbody tr:last-child td{border-bottom:none}
-.cat{padding:2px 7px;border-radius:20px;font-size:9.5px;display:inline-block}
-.cat.bn{background:rgba(227,168,87,.16);color:var(--dry)}.cat.n{background:rgba(115,135,184,.18);color:#A9BAE0}.cat.an{background:rgba(57,183,166,.16);color:var(--wet)}
-.month-divider td{border-top:1px solid var(--line)}
-.mt{min-width:760px}.mt tfoot td{border-top:1px solid var(--line);font-weight:600;background:var(--bg2)}
-.pc{display:flex;align-items:center;gap:10px}.pc span{min-width:44px}
-.pbar{position:relative;height:6px;background:var(--grid);border-radius:4px;width:120px}.pbar i{display:block;height:100%;border-radius:4px}
-.pbar u{position:absolute;left:66.67%;top:-3px;bottom:-3px;width:1px;background:#8DA0C7}
-.neg{color:var(--dry)}.pos{color:var(--wet)}
-.method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.method-card{background:var(--elev);padding:22px}
-.method-card .mi{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--wet);margin-bottom:10px}
-.method-card h3{font-family:'Fraunces',serif;font-size:16px;font-weight:600;margin:0 0 8px}
-.method-card p{font-size:13px;color:var(--ink-muted);line-height:1.6;margin:0}
-.formula{font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-top:12px;color:#C9D4EE;overflow-x:auto}
-.caveat{margin-top:20px;padding:18px 20px;border-radius:12px;background:rgba(227,168,87,.07);border:1px solid rgba(227,168,87,.28);font-size:13px;color:#D8C4A0;line-height:1.65}
-.caveat b{color:var(--dry)}
-footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-@media(max-width:720px){.hero-stats{grid-template-columns:1fr 1fr}.method-grid{grid-template-columns:1fr}.sliders{grid-template-columns:repeat(4,1fr)}}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="eyebrow"><span class="dot"></span>STASIUN ANALISIS · AGU 2026 – JUL 2027</div>
-  <h1>Proyeksi curah hujan dasarian,<br><em>dikoreksi ENSO</em> otomatis dari NOAA.</h1>
-  <p class="sub">36 periode dasarian diproyeksikan dari baseline klimatologi. Indeks Niño3.4 diambil otomatis dari NOAA CPC setiap halaman dibuka; bulan yang belum teramati diisi lintasan analog historis yang disesuaikan ke nilai observasi terbaru.</p>
-  <div class="hero-stats" id="heroStats"></div>
+:root{--bg:#0B1220;--bg2:#0E1830;--el:#141F3B;--el2:#1B2A4D;--line:#28395F;--ink:#EAEEF9;--mut:#8DA0C7;--dim:#5D6E93;--dry:#E3A857;--wet:#39B7A6;--neu:#7387B8;--grid:#1D2C4E}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:40px 24px 80px}
+.eye{font:12px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:var(--wet);margin-bottom:14px}
+h1{font:600 clamp(28px,4.2vw,48px)/1.06 Fraunces,serif;margin:0 0 12px}h1 em{font-weight:400;color:var(--dry)}
+.sub{color:var(--mut);font-size:15px;line-height:1.6;max-width:700px;margin-bottom:30px}
+.hero{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.stat{background:var(--el);padding:18px 20px}.stat .l{font:10.5px 'IBM Plex Mono',monospace;color:var(--dim);letter-spacing:.08em;margin-bottom:8px}
+.stat .v{font:600 26px Fraunces,serif}.stat small{font:500 12px Inter;color:var(--mut);margin-left:4px}.stat .d{font:11.5px 'IBM Plex Mono',monospace;margin-top:7px;color:var(--neu)}
+.d.down{color:var(--dry)}.d.up{color:var(--wet)}
+.sh{display:flex;align-items:baseline;gap:12px;margin:48px 0 14px}.sh h2{font:600 21px Fraunces,serif;margin:0}.sh i{flex:1;height:1px;background:var(--line)}.sh b{font:12px 'IBM Plex Mono',monospace;color:var(--dim)}
+.desc{color:var(--mut);font-size:13.5px;line-height:1.6;max-width:720px;margin-bottom:18px}
+.deck,.card{background:var(--el);border:1px solid var(--line);border-radius:14px;padding:20px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:11px 'IBM Plex Mono',monospace;background:var(--el2);border:1px solid var(--line);color:var(--mut);padding:7px 12px;border-radius:8px;cursor:pointer}.btn.on{color:var(--dry);border-color:var(--dry)}
+.iod{font:11px 'IBM Plex Mono',monospace;color:var(--mut)}.iod input{width:64px;background:var(--bg2);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:5px;font:inherit}
+.status{font:11.5px 'IBM Plex Mono',monospace;color:var(--mut);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.badge{padding:3px 10px;border-radius:20px;font-size:10.5px;text-transform:uppercase;background:rgba(115,135,184,.2);color:#A9BAE0}.badge.live{background:rgba(57,183,166,.18);color:var(--wet)}.badge.cache,.badge.snap{background:rgba(227,168,87,.18);color:var(--dry)}
+.msg{font:11.5px/1.55 'IBM Plex Mono',monospace;color:var(--dim);margin:0 0 14px}
+.sliders{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:6px}
+.sc{display:flex;flex-direction:column;align-items:center;padding:8px 2px}.sc .m{font:10.5px 'IBM Plex Mono',monospace;color:var(--dim);margin-bottom:8px}.sc .v{font:600 13px 'IBM Plex Mono',monospace;margin-top:8px}
+.src{font:9px 'IBM Plex Mono',monospace;margin-top:5px;padding:1px 6px;border-radius:10px;background:rgba(115,135,184,.2);color:#A9BAE0}.src.obs,.src.mtd{background:rgba(57,183,166,.18);color:var(--wet)}.src.fc,.src.man{background:rgba(227,168,87,.18);color:var(--dry)}
+.sc input{writing-mode:vertical-lr;direction:rtl;width:6px;height:80px;-webkit-appearance:none;background:linear-gradient(to top,#2C8F82,var(--grid) 50%,#B9873F);border-radius:6px}.sc input:disabled{opacity:.45}
+.sc input::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:9px;border-radius:3px;background:var(--ink)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font:11px 'IBM Plex Mono',monospace;color:var(--mut);margin-bottom:6px}.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+#chart{width:100%;height:auto;display:block}.bar:hover{filter:brightness(1.25)}.bt{stroke:#4C5C86;stroke-width:1.4;stroke-dasharray:2 2}.el{fill:none;stroke:var(--dry);stroke-width:2}
+.ax{font:9.5px 'IBM Plex Mono',monospace;fill:var(--dim)}.ml{font:10px 'IBM Plex Mono',monospace;fill:var(--mut)}
+#tip{position:absolute;pointer-events:none;background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:8px 11px;font:11.5px/1.6 'IBM Plex Mono',monospace;opacity:0;white-space:nowrap;z-index:5}#tip b{color:var(--dry)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--el)}table{width:100%;border-collapse:collapse;min-width:820px}
+th{font:9.5px 'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);text-align:left;padding:10px;border-bottom:1px solid var(--line)}
+td{padding:7px 10px;border-bottom:1px solid var(--grid);font:11px 'IBM Plex Mono',monospace}tr.md td{border-top:1px solid var(--line)}
+.cat{padding:2px 7px;border-radius:20px;font-size:9.5px}.bn{background:rgba(227,168,87,.16);color:var(--dry)}.n{background:rgba(115,135,184,.18);color:#A9BAE0}.an{background:rgba(57,183,166,.16);color:var(--wet)}
+.neg{color:var(--dry)}.pos{color:var(--wet)}.pb{display:flex;height:8px;width:130px;border-radius:4px;overflow:hidden;background:var(--grid)}.pb i{display:block;height:100%}
+.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}.mc{background:var(--el);padding:20px}
+.mc h3{font:600 16px Fraunces,serif;margin:0 0 8px}.mc p{font-size:13px;color:var(--mut);line-height:1.6;margin:0}.fm{font:12px 'IBM Plex Mono',monospace;background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:11px 13px;margin-top:10px;color:#C9D4EE;overflow-x:auto}
+.cv{margin-top:18px;padding:16px 18px;border-radius:12px;background:rgba(227,168,87,.07);border:1px solid rgba(227,168,87,.28);font-size:13px;color:#D8C4A0;line-height:1.65}.cv b{color:var(--dry)}
+footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);font:11px 'IBM Plex Mono',monospace;color:var(--dim)}
+@media(max-width:720px){.hero{grid-template-columns:1fr 1fr}.mg{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<div class="eye">ZOM 566 · WAJO · OKT 2026 – SEP 2027</div>
+<h1>Proyeksi hujan dasarian,<br><em>ENSO log-linear</em> dengan selang Gamma.</h1>
+<p class="sub">Baseline BMKG 1991–2020. Bulan lampau dan bulan berjalan memakai observasi telemetri; sisa periode dikoreksi faktor exp(−β·ENSO − γ·IOD). Koefisien β dikalibrasi dari data telemetri Wajo 2022–2024 bila tersedia.</p>
+<div class="hero" id="hero"></div>
 
-  <div class="section-head"><span class="num">01</span><h2>Indeks ENSO (data NOAA)</h2><span class="line"></span></div>
-  <p class="section-desc">Bulan berlabel <b>OBS</b> adalah observasi NOAA CPC. <b>MTD</b> = estimasi bulan berjalan dari rerata mingguan, <b>STAT</b> = forecast analog statistik otomatis dari riwayat Niño3.4 NOAA, <b>FCST</b> = penimpa manual dari Google Sheet (opsional). Bulan berlabel <b>PROY</b> belum punya data, sehingga diisi lintasan analog (komposit El Niño kuat 1987/97/2002/15/23) yang digeser ke nilai observasi terakhir dan meluruh secara linear dalam 12 bulan. Mode manual tersedia bila Anda ingin memasukkan outlook resmi sendiri.</p>
-  <div class="deck">
-    <div class="deck-top">
-      <div class="status"><span class="badge load" id="badge">memuat…</span><span id="statusLine">Menghubungi NOAA CPC…</span></div>
-      <div class="btns">
-        <button class="btn" id="refreshBtn">↻ AMBIL ULANG DARI NOAA</button>
-        <button class="btn" id="manualBtn">✎ MODE MANUAL: MATI</button>
-      </div>
-    </div>
-    <p class="statusmsg" id="statusMsg"></p>
-    <div class="sliders" id="sliderDeck"></div>
-  </div>
+<div class="sh"><b>01</b><h2>Indeks ENSO & IOD</h2><i></i></div>
+<p class="desc">OBS = observasi NOAA CPC, MTD = rerata bulan berjalan, FCST = penimpa Google Sheet, STAT = forecast statistik otomatis, PROY = lintasan analog El Niño yang digeser ke observasi terakhir dan meluruh linear 12 bulan. Mingguan Niño-3.4 bisa lebih tinggi dari bulanan; pakai mode manual bila perlu.</p>
+<div class="deck"><div class="top"><div class="status"><span class="badge" id="badge">memuat…</span><span id="sl">Menghubungi NOAA CPC…</span></div>
+<div class="btns"><label class="iod">IOD (DMI) <input id="iod" type="number" step="0.05" value="0.39"></label><button class="btn" id="rf">↻ AMBIL ULANG</button><button class="btn" id="mb">✎ MANUAL: MATI</button></div></div>
+<p class="msg" id="sm"></p><div class="sliders" id="sd"></div></div>
 
-  <div class="section-head"><span class="num">02</span><h2>Hyetograph proyeksi</h2><span class="line"></span></div>
-  <p class="section-desc">Batang = proyeksi curah hujan tiap dasarian (mm), garis putus = baseline klimatologi, garis atas = indeks ENSO bulanan yang dipakai.</p>
-  <div class="chart-card">
-    <div class="legend">
-      <span><i class="sw" style="background:var(--dry)"></i>Bawah Normal (BN)</span>
-      <span><i class="sw" style="background:var(--neutral)"></i>Normal (N)</span>
-      <span><i class="sw" style="background:var(--wet)"></i>Atas Normal (AN)</span>
-      <span><i class="sw" style="background:var(--dry);border-radius:50%"></i>Indeks ENSO</span>
-      <span><i class="sw" style="background:transparent;border-top:2px dashed #4C5C86"></i>Baseline</span>
-    </div>
-    <svg id="chartSvg" viewBox="0 0 1080 420" preserveAspectRatio="xMidYMid meet"></svg>
-    <div class="tooltip" id="tooltip"></div>
-  </div>
+<div class="sh"><b>02</b><h2>Hyetograph proyeksi</h2><i></i></div>
+<div class="card" style="position:relative"><div class="legend"><span><i class="sw" style="background:var(--dry)"></i>Bawah Normal</span><span><i class="sw" style="background:var(--neu)"></i>Normal</span><span><i class="sw" style="background:var(--wet)"></i>Atas Normal</span><span>Garis atas = indeks ENSO · putus = baseline · whisker = P10–P90 Gamma</span></div>
+<svg id="chart" viewBox="0 0 1080 420"></svg><div id="tip"></div></div>
 
-  <div class="section-head"><span class="num">03</span><h2>Total curah hujan per bulan</h2><span class="line"></span></div>
-  <p class="section-desc">Jumlah tiga dasarian tiap bulan (dari nilai proyeksi yang sudah dibulatkan). Garis tegak pada batang persentase menandai 100% baseline. Selang P10–P90 tidak dijumlahkan karena tidak bisa ditambahkan begitu saja antar dasarian.</p>
-  <div class="table-wrap"><table class="mt">
-    <thead><tr><th>Bulan</th><th>Baseline</th><th>Proyeksi</th><th>Selisih</th><th>% dari baseline</th><th>ENSO</th><th>Kategori</th></tr></thead>
-    <tbody id="monthBody"></tbody>
-  </table></div>
+<div class="sh"><b>03</b><h2>Total per bulan & peluang kategori</h2><i></i></div>
+<p class="desc">Peluang BN (&lt;85%), N, AN (&gt;115% baseline) dihitung dari CDF Gamma (CV bulanan 0,45). Untuk bulan berjalan, observasi sampai hari ini ditambahkan ke distribusi sisa bulan.</p>
+<div class="tw"><table><thead><tr><th>Bulan</th><th>Baseline</th><th>Proyeksi</th><th>P10–P90</th><th>%</th><th>ENSO</th><th>Faktor F</th><th>Peluang BN / N / AN</th><th>Kategori</th></tr></thead><tbody id="mb2"></tbody></table></div>
 
-  <div class="section-head"><span class="num">04</span><h2>Rincian 36 dasarian</h2><span class="line"></span></div>
-  <div class="table-wrap"><table>
-    <thead><tr><th>Periode</th><th>Baseline</th><th>Indeks ENSO</th><th>Faktor koreksi</th><th>λ terkoreksi</th><th>Proyeksi</th><th>P10–P90</th><th>Kategori</th></tr></thead>
-    <tbody id="tblBody"></tbody>
-  </table></div>
+<div class="sh"><b>04</b><h2>Rincian 36 dasarian</h2><i></i></div>
+<div class="tw"><table><thead><tr><th>Periode</th><th>Baseline</th><th>ENSO</th><th>β</th><th>F</th><th>Proyeksi</th><th>P10–P90</th><th>Kategori</th></tr></thead><tbody id="tb"></tbody></table></div>
 
-  <div class="section-head"><span class="num">05</span><h2>Metodologi</h2><span class="line"></span></div>
-  <div class="method-grid">
-    <div class="method-card"><div class="mi">01 — BASELINE</div><h3>λ₀ dasarian</h3><p>Rerata klimatologi tiap dasarian (36 periode) dipakai sebagai parameter dasar Poisson.</p></div>
-    <div class="method-card"><div class="mi">02 — KOREKSI ENSO</div><h3>Faktor koreksi</h3><p>Anomali Niño3.4 bulanan dari NOAA dikalikan sensitivitas musiman k (lebih besar saat puncak kemarau).</p>
-      <div class="formula">koreksi = 1 − (k × ENSO)<br>λ' = MAX(λ₀×0.25, λ₀×koreksi)</div></div>
-    <div class="method-card"><div class="mi">03 — DISTRIBUSI POISSON</div><h3>Proyeksi & selang</h3><p>λ' jadi parameter Poisson; selang P10–P90 didekati normal karena λ cukup besar.</p>
-      <div class="formula">P10 = λ' − 1.2816×√λ'<br>P90 = λ' + 1.2816×√λ'</div></div>
-  </div>
-  <div class="caveat"><b>Keterbatasan:</b> NOAA CPC hanya menyediakan nilai <i>observasi</i> Niño3.4 sebagai berkas teks; forecast numerik resminya berupa probabilitas, bukan angka indeks bulanan. Karena itu bulan mendatang tetap memakai lintasan analog yang disesuaikan, bukan forecast model. Faktor sensitivitas k bersifat indikatif (baseline hanya klimatologi 1 tahun). Bila halaman dibuka dari lingkungan yang memblokir akses ke NOAA (CORS/jaringan/pratinjau), halaman memakai cache terakhir atau snapshot dan menampilkannya di label status.</div>
-  <footer><span>METODE: POISSON × KOREKSI ENSO NIÑO3.4</span><span>SUMBER: NOAA CPC (sstoi.indices / Rnino34.ascii.txt) · BASELINE_CURAH_HUJAN_DASARIAN.XLSX</span></footer>
-</div>
-
+<div class="sh"><b>05</b><h2>Metodologi</h2><i></i></div>
+<div class="mg">
+<div class="mc"><h3>Faktor log-linear</h3><p>Tanpa lantai, sehingga rasio mendekati nol bisa terjadi (Sep 2026 Wajo ≈ 5% normal).</p><div class="fm">F = exp(−β(m)·ENSO − γ(m)·IOD)<br>λ' = λ₀ × F</div></div>
+<div class="mc"><h3>Kalibrasi β</h3><p>Regresi ln(R) terhadap ENSO melalui titik asal dari telemetri Wajo, lalu shrinkage ke prior (k = 1).</p><div class="fm">β_obs = −Σ x·ln R / Σ x²<br>β = (β₀ + n·β_obs)/(1+n), 0 ≤ β ≤ 1,5</div></div>
+<div class="mc"><h3>Selang Gamma</h3><p>Hujan kontinu, condong ke kanan, bersatuan mm. CV dasarian 0,9; bulanan 0,45.</p><div class="fm">α = 1/CV², θ = λ'/α<br>P10/P90 = GAMMA.INV(p, α, θ)</div></div></div>
+<div class="cv"><b>Keterbatasan:</b> β dikalibrasi dari hanya dua tahun per bulan (ditandai ★ bila ada data); nilai ENSO tahun analog memakai perkiraan bawaan sampai berkas NOAA berhasil dimuat. γ (IOD) dan β bulan tanpa data bersifat prior, belum tervalidasi. Pos Wajo belum tentu mewakili ZOM 566, dan baseline memakai normal ZOM. Ini model indikatif, bukan prakiraan resmi BMKG; cocokkan dengan prakiraan terbaru di iklim.bmkg.go.id.</div>
+<footer>SUMBER: NOAA CPC · BMKG ZOM 566 (1991–2020) · TELEMETRI BBWS POMPENGAN JENEBERANG</footer></div>
 <script>
-/* ---------- DATA STATIS ---------- */
-const BASE=[25,21,22,23,18,27,37,33,41,48,47,53,45,38,55,41,34,39,31,35,31,34,44,57,60,71,89,107,79,101,100,91,73,74,66,41];
-const SENS=[.2,.2,.18,.12,.07,.05,.05,.07,.08,.1,.15,.18];
-const MONTHS=[
- ['AGU','Agustus',2026,8,2.0],['SEP','September',2026,9,2.17],['OKT','Oktober',2026,10,2.22],['NOV','November',2026,11,2.47],
- ['DES','Desember',2026,12,2.39],['JAN','Januari',2027,1,2.28],['FEB','Februari',2027,2,1.96],['MAR','Maret',2027,3,1.56],
- ['APR','April',2027,4,0.99],['MEI','Mei',2027,5,0.41],['JUN','Juni',2027,6,0.1],['JUL','Juli',2027,7,-0.03]
-].map(a=>({m:a[0],full:a[1],year:a[2],mo:a[3],snap:a[4]}));   // snap = lintasan analog / snapshot
-const DASARIAN=BASE.map((b,i)=>{const mi=Math.floor(i/3),m=MONTHS[mi];return{bulan:m.m,tahun:m.year,dasarian:['I','II','III'][i%3],baseline:b,k:SENS[mi]};});
+const CLIM=[41,34,39,31,35,31,34,44,57,60,71,89,107,79,101,100,91,73,74,66,41,25,21,22,23,18,27,37,33,41,48,47,53,45,38,55];
+const NM=['','JAN','FEB','MAR','APR','MEI','JUN','JUL','AGU','SEP','OKT','NOV','DES'];
+const FL=['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const SN={10:2.22,11:2.47,12:2.39,1:2.28,2:1.96,3:1.56,4:.99,5:.41,6:.1,7:-.03,8:0,9:0};
+const MONTHS=Array.from({length:12},(_,i)=>{const t=9+i,mo=t%12+1;return{m:NM[mo],full:FL[mo],y:2026+Math.floor(t/12),mo,snap:SN[mo]}});
+const BETA0=[0,.08,.05,.07,.08,.10,.15,.25,.6,.8,.8,.15,.10],GAM0={8:.3,9:.4,10:.4,11:.3};
+const CVD=.9,CVM=.45,STARTS=[0,10,20],LENS=[10,10,11];
+/* Observasi Wajo 2026 (mm): Sep total; Okt 1–22. Ubah di sini setelah data baru. */
+const OBSM={y:2026,mo:10,mm:0,day:22},SEP26=3.6;
+/* Telemetri Wajo historis (mm/bulan); e = perkiraan Niño-3.4 bila NOAA belum termuat */
+const TELE=[{y:2022,mo:10,mm:276.1,e:-1},{y:2022,mo:11,mm:158.2,e:-.9},{y:2022,mo:12,mm:148.2,e:-.8},{y:2023,mo:1,mm:50.5,e:-.6},{y:2023,mo:10,mm:31.6,e:1.8},{y:2023,mo:11,mm:165.1,e:2},{y:2023,mo:12,mm:91,e:2},{y:2024,mo:1,mm:139.8,e:1.8}];
+const DAS=MONTHS.flatMap((m,i)=>[0,1,2].map(d=>({mi:i,bulan:m.m,y:m.y,mo:m.mo,d,dn:['I','II','III'][d],base:CLIM[(m.mo-1)*3+d]})));
+const NORM=mo=>CLIM.slice((mo-1)*3,mo*3).reduce((a,b)=>a+b,0);
 
-/* ---------- SUMBER NOAA ---------- */
+/* ---- fungsi Gamma ---- */
+function lg(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,.001208650973866179,-5.395239384953e-6];let y=x,t=x+5.5;t-=(x+.5)*Math.log(t);let s=1.000000000190015;for(const k of c)s+=k/++y;return -t+Math.log(2.5066282746310005*s/x)}
+function gp(a,x){if(x<=0)return 0;if(x<a+1){let ap=a,s=1/a,d=s;for(let n=0;n<300;n++){ap++;d*=x/ap;s+=d;if(Math.abs(d)<Math.abs(s)*1e-10)break}return s*Math.exp(-x+a*Math.log(x)-lg(a))}
+let b=x+1-a,c=1e30,d=1/b,h=d;for(let i=1;i<300;i++){const an=-i*(i-a);b+=2;d=an*d+b;if(Math.abs(d)<1e-30)d=1e-30;c=b+an/c;if(Math.abs(c)<1e-30)c=1e-30;d=1/d;const dl=d*c;h*=dl;if(Math.abs(dl-1)<1e-10)break}return 1-Math.exp(-x+a*Math.log(x)-lg(a))*h}
+function gq(p,a,th){let lo=0,hi=a*th*20+10;for(let i=0;i<70;i++){const m=(lo+hi)/2;gp(a,m/th)<p?lo=m:hi=m}return(lo+hi)/2}
+function dist(rem,cv,off){if(rem<.01)return{p10:off,p90:off,a:null};const a=1/(cv*cv),th=rem/a;return{p10:off+gq(.1,a,th),p90:off+gq(.9,a,th),a,th}}
+
+/* ---- sumber NOAA ---- */
 const NUM=s=>s!==''&&!isNaN(+s);
-function parseSstoi(t){            // YR MON NINO1+2 ANOM NINO3 ANOM NINO4 ANOM NINO3.4 ANOM
-  const out={};
-  t.split(/\r?\n/).forEach(l=>{const p=l.trim().split(/\s+/);
-    if(p.length>=10&&p.slice(0,10).every(NUM)){const y=+p[0],m=+p[1];if(y>1900&&m>=1&&m<=12)out[y+'-'+m]=+p[9];}});
-  return out;
-}
-function parseRnino(t){            // YR MTH ANOM
-  const out={};
-  t.split(/\r?\n/).forEach(l=>{const p=l.trim().split(/\s+/);
-    if(p.length===3&&p.every(NUM)){const y=+p[0],m=+p[1];if(y>1900&&m>=1&&m<=12)out[y+'-'+m]=+p[2];}});
-  return out;
-}
-/* Tempel URL web app Apps Script (berakhiran /exec) di sini. Kosongkan untuk langsung ke NOAA. */
-const BRIDGE_URL='https://script.google.com/macros/s/AKfycbz0wYaP951g6GMdPxhVK8iWLQfilapW51ZlA2IuxKtktH--9aEvg1iulgncLzAtBBeT/exec';
-window.__bridgeName='';
-function parseBridge(t){
-  const j=JSON.parse(t);
-  if(!j.ok)throw new Error('jembatan gagal: '+(j.errors||[]).join('; '));
-  window.__bridgeName='Apps Script → '+j.source;window.__bridge=j;
-  return j.series;
-}
-const SOURCES=[
-  ...(BRIDGE_URL?[{name:'Apps Script → NOAA CPC',url:BRIDGE_URL,parse:parseBridge,dyn:true}]:[]),
-  {name:'NOAA CPC · sstoi.indices (OISSTv2.1, Niño3.4 ANOM)',url:'https://www.cpc.ncep.noaa.gov/data/indices/sstoi.indices',parse:parseSstoi},
-  {name:'NOAA CPC · Rnino34.ascii.txt (ERSSTv6 relatif)',url:'https://www.cpc.ncep.noaa.gov/data/indices/Rnino34.ascii.txt',parse:parseRnino}
-];
-async function fetchText(url,ms=12000){
-  const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);
-  try{const r=await fetch(url,{cache:'no-store',signal:c.signal});if(!r.ok)throw new Error('HTTP '+r.status);return await r.text();}
-  finally{clearTimeout(t);}
-}
+const pSst=t=>{const o={};t.split(/\r?\n/).forEach(l=>{const p=l.trim().split(/\s+/);if(p.length>=10&&p.slice(0,10).every(NUM)){const y=+p[0],m=+p[1];if(y>1900&&m>=1&&m<=12)o[y+'-'+m]=+p[9]}});return o};
+const pRn=t=>{const o={};t.split(/\r?\n/).forEach(l=>{const p=l.trim().split(/\s+/);if(p.length===3&&p.every(NUM)){const y=+p[0],m=+p[1];if(y>1900&&m>=1&&m<=12)o[y+'-'+m]=+p[2]}});return o};
+/* Isi dengan URL web app Apps Script (/exec) milik Anda; jangan membagikan halaman ini bila URL terisi. */
+const BRIDGE_URL='';
+window.__b=null;
+const pBr=t=>{const j=JSON.parse(t);if(!j.ok)throw new Error('jembatan gagal');window.__b=j;return j.series};
+const SRC=[...(BRIDGE_URL?[{n:'Apps Script → NOAA CPC',u:BRIDGE_URL,p:pBr}]:[]),{n:'NOAA CPC · sstoi.indices',u:'https://www.cpc.ncep.noaa.gov/data/indices/sstoi.indices',p:pSst},{n:'NOAA CPC · Rnino34.ascii.txt',u:'https://www.cpc.ncep.noaa.gov/data/indices/Rnino34.ascii.txt',p:pRn}];
+async function ft(u,ms=12000){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);try{const r=await fetch(u,{cache:'no-store',signal:c.signal});if(!r.ok)throw new Error('HTTP '+r.status);return await r.text()}finally{clearTimeout(t)}}
 
-/* ---------- STATE ---------- */
-const CK='enso_noaa_cache_v1';
-let observed={};           // 'YYYY-M' -> anomali
-let srcName='',srcMode='load',fetchedAt=null,errs=[];
-let fcst={},mtd={},fauto={};
-let manual=false,manualVals={};
+const CK='enso_wajo_v2';let allObs={},fcst={},mtd={},fauto={},srcName='',mode='load',fAt=null,errs=[],manual=false,mv={},auto=[];
+const key=m=>m.y+'-'+m.mo;
+function ensoAuto(){const kn=MONTHS.map(m=>allObs[key(m)]!==undefined?{v:allObs[key(m)],s:'obs'}:fcst[key(m)]!==undefined?{v:fcst[key(m)],s:'fc'}:mtd[key(m)]!==undefined?{v:mtd[key(m)],s:'mtd'}:fauto[key(m)]!==undefined?{v:fauto[key(m)],s:'stat'}:null);
+let L=-1;kn.forEach((k,i)=>{if(k)L=i});const off=L>=0?kn[L].v-MONTHS[L].snap:0;
+return MONTHS.map((m,i)=>kn[i]||{v:Math.round((m.snap+(L>=0?off*Math.max(0,1-(i-L)/12):0))*100)/100,s:'pro'})}
+const ensoOf=i=>manual?mv[MONTHS[i].m]:auto[i].v;
+async function load(){mode='load';errs=[];stat();
+for(const s of SRC){try{const d=s.p(await ft(s.u));if(!MONTHS.some(m=>d[key(m)]!==undefined))throw new Error('bulan target tidak ada');
+allObs=d;srcName=s.n;mode='live';fAt=new Date();const b=window.__b;fcst=(b&&b.forecast)||{};mtd=(b&&b.mtd)||{};fauto=(b&&b.forecastAuto)||{};
+try{localStorage.setItem(CK,JSON.stringify({allObs,fcst,mtd,fauto,srcName,t:fAt}))}catch(e){}return fin()}catch(e){errs.push(s.u.split('/').pop()+': '+(e.name==='AbortError'?'timeout':e.message))}}
+try{const c=JSON.parse(localStorage.getItem(CK)||'null');if(c&&c.allObs){({allObs,fcst,mtd,fauto,srcName}=c);fcst=fcst||{};mtd=mtd||{};fauto=fauto||{};fAt=new Date(c.t);mode='cache';return fin()}}catch(e){}
+allObs={};fcst={};mtd={};fauto={};srcName='Snapshot bawaan (lintasan analog)';mode='snap';fin()}
+function fin(){auto=ensoAuto();sliders();stat();render()}
+function stat(){const b=document.getElementById('badge');b.className='badge '+({load:'',live:'live',cache:'cache',snap:'snap'}[mode]);b.textContent={load:'memuat…',live:'live NOAA',cache:'cache lokal',snap:'snapshot'}[mode];
+document.getElementById('sl').textContent=mode==='load'?'Menghubungi NOAA CPC…':srcName;
+document.getElementById('sm').textContent=mode==='live'?'Diambil '+fAt.toLocaleString('id-ID')+'.':mode==='cache'?'NOAA gagal ('+errs.join('; ')+'). Memakai cache '+fAt.toLocaleString('id-ID')+'.':mode==='snap'?'NOAA gagal ('+errs.join('; ')+'). Kemungkinan CORS; isi BRIDGE_URL atau gunakan mode manual. Nilai ENSO analog bawaan dipakai.':''}
 
-function ensoAuto(){      // prioritas: observasi > forecast (Sheet) > MTD mingguan > lintasan analog
-  const key=m=>m.year+'-'+m.mo,res=[];let L=-1;
-  const known=MONTHS.map(m=>observed[key(m)]!==undefined?{v:observed[key(m)],src:'obs'}:fcst[key(m)]!==undefined?{v:fcst[key(m)],src:'fcst'}:mtd[key(m)]!==undefined?{v:mtd[key(m)],src:'mtd'}:fauto[key(m)]!==undefined?{v:fauto[key(m)],src:'stat'}:null);
-  known.forEach((k,i)=>{if(k)L=i;});
-  const off=L>=0?known[L].v-MONTHS[L].snap:0;
-  MONTHS.forEach((m,i)=>{
-    if(known[i])res.push(known[i]);
-    else if(L<0)res.push({v:m.snap,src:'pro'});
-    else res.push({v:Math.round((m.snap+off*Math.max(0,1-(i-L)/12))*100)/100,src:'pro'});
-  });
-  return res;
-}
-let autoVals=ensoAuto();
-function ensoOf(mon){const i=MONTHS.findIndex(m=>m.m===mon);return manual?manualVals[mon]:autoVals[i].v;}
+/* ---- kalibrasi β ---- */
+function beta(mo){const P=TELE.filter(t=>t.mo===mo);let sx=0,sxx=0;P.forEach(t=>{const x=allObs[t.y+'-'+t.mo]??t.e;sx+=x*Math.log(t.mm/NORM(mo));sxx+=x*x});
+const n=P.length,bo=sxx?-sx/sxx:0;return{b:Math.max(0,Math.min(1.5,(BETA0[mo]+n*bo)/(1+n))),n}}
 
-async function loadNOAA(){
-  srcMode='load';errs=[];setStatus();
-  for(const s of SOURCES){
-    try{
-      const data=s.parse(await fetchText(s.url));
-      if(!MONTHS.some(m=>data[m.year+'-'+m.mo]!==undefined))throw new Error('tidak ada bulan target di berkas');
-      observed={};MONTHS.forEach(m=>{const v=data[m.year+'-'+m.mo];if(v!==undefined)observed[m.year+'-'+m.mo]=v;});
-      srcName=(s.dyn&&window.__bridgeName)||s.name;srcMode='live';fetchedAt=new Date();
-      fcst=(s.dyn&&window.__bridge&&window.__bridge.forecast)||{};mtd=(s.dyn&&window.__bridge&&window.__bridge.mtd)||{};fauto=(s.dyn&&window.__bridge&&window.__bridge.forecastAuto)||{};
-      try{localStorage.setItem(CK,JSON.stringify({observed,fcst,mtd,fauto,srcName,t:fetchedAt.toISOString()}));}catch(e){}
-      return finish();
-    }catch(e){errs.push(s.url.split('/').pop()+': '+(e.name==='AbortError'?'timeout':e.message));}
-  }
-  try{const c=JSON.parse(localStorage.getItem(CK)||'null');
-    if(c&&c.observed){observed=c.observed;fcst=c.fcst||{};mtd=c.mtd||{};fauto=c.fauto||{};srcName=c.srcName;fetchedAt=new Date(c.t);srcMode='cache';return finish();}}catch(e){}
-  observed={};fcst={};mtd={};fauto={};srcName='Snapshot bawaan halaman (lintasan analog)';srcMode='snap';fetchedAt=null;finish();
-}
-function finish(){autoVals=ensoAuto();buildSliders();setStatus();render();}
-
-function setStatus(){
-  const b=document.getElementById('badge'),l=document.getElementById('statusLine'),m=document.getElementById('statusMsg');
-  const labels={load:'memuat…',live:'live NOAA',cache:'cache lokal',snap:'snapshot'};
-  b.className='badge '+({load:'load',live:'live',cache:'cache',snap:'snap'}[srcMode]);b.textContent=labels[srcMode];
-  const ks=Object.keys(observed).map(k=>k.split('-').map(Number)).sort((a,c)=>a[0]-c[0]||a[1]-c[1]);
-  const last=ks.length?ks[ks.length-1]:null;
-  const nm=['','JAN','FEB','MAR','APR','MEI','JUN','JUL','AGU','SEP','OKT','NOV','DES'];
-  l.textContent=srcMode==='load'?'Menghubungi NOAA CPC…':srcName+(last?` · observasi terakhir ${nm[last[1]]} ${last[0]} = ${(observed[last[0]+'-'+last[1]]).toFixed(2)} °C`:'');
-  let msg='';
-  if(srcMode==='live')msg='Diambil '+fetchedAt.toLocaleString('id-ID')+(errs.length?' (sumber utama gagal: '+errs.join('; ')+')':'')+'.';
-  if(srcMode==='cache')msg='Gagal terhubung ke NOAA ('+errs.join('; ')+'). Memakai data tersimpan dari '+fetchedAt.toLocaleString('id-ID')+'.';
-  if(srcMode==='snap')msg='Gagal terhubung ke NOAA ('+errs.join('; ')+'). Kemungkinan akses lintas-domain diblokir; isi BRIDGE_URL dengan URL web app Apps Script (lihat Code.gs) atau gunakan mode manual.';
-  m.textContent=msg;
-}
-
-/* ---------- HITUNG ---------- */
-function computeRow(d){
-  const enso=ensoOf(d.bulan),koreksi=1-d.k*enso,lambda=Math.max(d.baseline*.25,d.baseline*koreksi);
-  const proj=Math.round(lambda),p10=Math.max(0,Math.round(lambda-1.2816*Math.sqrt(lambda))),p90=Math.round(lambda+1.2816*Math.sqrt(lambda));
-  const ratio=proj/d.baseline;let cat='n',catLabel='Normal (N)';
-  if(ratio<.85){cat='bn';catLabel='Bawah Normal (BN)';}else if(ratio>1.15){cat='an';catLabel='Atas Normal (AN)';}
-  return{...d,enso,koreksi,lambda,proj,p10,p90,cat,catLabel};
-}
-const fmt1=x=>(Math.round(x*10)/10).toFixed(1);
-function render(){const rows=DASARIAN.map(computeRow);renderHero(rows);renderChart(rows);renderMonthly(rows);renderTable(rows);}
-
-function renderHero(rows){
-  const tb=rows.reduce((s,r)=>s+r.baseline,0),tp=rows.reduce((s,r)=>s+r.proj,0),delta=tp-tb,pct=delta/tb*100;
-  const e=ensoOf('AGU'),phase=e>=.5?'El Niño':e<=-.5?'La Niña':'Netral';
-  const bn=rows.filter(r=>r.cat==='bn').length,an=rows.filter(r=>r.cat==='an').length;
-  const st=[
-    {label:'TOTAL BASELINE',value:tb.toLocaleString('id-ID'),unit:'mm'},
-    {label:'TOTAL PROYEKSI',value:tp.toLocaleString('id-ID'),unit:'mm',delta:`${delta>=0?'▲':'▼'} ${Math.abs(pct).toFixed(1)}% dari baseline`,dc:delta<0?'down':delta>0?'up':'flat'},
-    {label:'FASE ENSO (AGU)',value:phase,unit:'',delta:`indeks ${fmt1(e)} °C`,dc:'flat'},
-    {label:'SEBARAN KATEGORI',value:`${bn} BN`,unit:`/ ${an} AN / ${rows.length-bn-an} N`,dc:'flat'}];
-  document.getElementById('heroStats').innerHTML=st.map(s=>`<div class="stat"><div class="label">${s.label}</div><div class="value">${s.value}<small>${s.unit}</small></div>${s.delta?`<div class="delta ${s.dc}">${s.delta}</div>`:''}</div>`).join('');
-}
-
-function buildSliders(){
-  const deck=document.getElementById('sliderDeck');
-  deck.innerHTML=MONTHS.map((m,i)=>{
-    const val=manual?manualVals[m.m]:autoVals[i].v,T={obs:['obs','OBS'],mtd:['mtd','MTD'],fcst:['fc','FCST'],stat:['stat','STAT'],pro:['pro','PROY']},tag=manual?['man','MAN']:T[autoVals[i].src];
-    return`<div class="slider-cell"><div class="m">${m.m} ${String(m.year).slice(2)}</div>
-      <input type="range" min="-2" max="3" step="0.1" value="${Math.max(-2,Math.min(3,val))}" data-month="${m.m}" ${manual?'':'disabled'}>
-      <div class="v" id="v-${m.m}">${val.toFixed(2)}</div><div class="src ${tag[0]}">${tag[1]}</div></div>`;}).join('');
-  deck.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',e=>{
-    const mon=e.target.dataset.month,v=parseFloat(e.target.value);manualVals[mon]=v;
-    document.getElementById('v-'+mon).textContent=v.toFixed(2);render();}));
-}
-
-const svgNS='http://www.w3.org/2000/svg';
-function el(t,a,p){const n=document.createElementNS(svgNS,t);for(const k in a)n.setAttribute(k,a[k]);p.appendChild(n);return n;}
-function renderChart(rows){
-  const svg=document.getElementById('chartSvg');svg.innerHTML='';
-  const W=1080,H=420,padL=40,padR=20,padT=50,padB=44,plotW=W-padL-padR,plotH=H-padT-padB,n=rows.length,gap=4,barW=(plotW-gap*(n-1))/n;
-  const maxVal=Math.max(...rows.map(r=>Math.max(r.p90,r.baseline)))*1.08;
-  for(let i=0;i<=5;i++){const y=padT+plotH-plotH*i/5;
-    el('line',{x1:padL,x2:W-padR,y1:y,y2:y,stroke:'var(--grid)','stroke-width':1},svg);
-    const t=el('text',{x:padL-8,y:y+3,'text-anchor':'end',class:'axis-label'},svg);t.textContent=Math.round(maxVal*i/5);}
-  const tip=document.getElementById('tooltip'),card=document.querySelector('.chart-card');
-  const catHex={bn:'#E3A857',n:'#7387B8',an:'#39B7A6'};
-  rows.forEach((r,i)=>{
-    const x=padL+i*(barW+gap),barH=r.proj/maxVal*plotH,y=padT+plotH-barH;
-    const y10=padT+plotH-r.p10/maxVal*plotH,y90=padT+plotH-r.p90/maxVal*plotH;
-    el('line',{x1:x+barW/2,x2:x+barW/2,y1:y90,y2:y10,stroke:'#3A4A72','stroke-width':1.6},svg);
-    const rect=el('rect',{x,y,width:barW,height:Math.max(barH,1.5),rx:2,fill:catHex[r.cat],class:'bar'},svg);
-    rect.addEventListener('mousemove',e=>{const b=card.getBoundingClientRect();tip.style.left=(e.clientX-b.left+14)+'px';tip.style.top=(e.clientY-b.top-10)+'px';tip.style.opacity=1;
-      tip.innerHTML=`<b>${r.bulan} ${r.dasarian} ${r.tahun}</b><br>Baseline: ${r.baseline} mm<br>Proyeksi: <b>${r.proj} mm</b><br>P10–P90: ${r.p10}–${r.p90} mm<br>ENSO: ${fmt1(r.enso)}°C · ${r.catLabel}`;});
-    rect.addEventListener('mouseleave',()=>tip.style.opacity=0);
-    const yb=padT+plotH-r.baseline/maxVal*plotH;
-    el('line',{x1:x-1,x2:x+barW+1,y1:yb,y2:yb,class:'baseline-tick'},svg);
-  });
-  const eT=14,eB=padT-8,es=v=>eB-((Math.max(-2,Math.min(3,v))+2)/5)*(eB-eT);
-  const d=rows.map((r,i)=>(i?'L':'M')+(padL+i*(barW+gap)+barW/2)+' '+es(r.enso)).join(' ');
-  el('path',{d,class:'enso-line'},svg);
-  rows.forEach((r,i)=>{if(i%3===1)el('circle',{cx:padL+i*(barW+gap)+barW/2,cy:es(r.enso),r:2.6,class:'enso-dot'},svg);});
-  MONTHS.forEach((m,mi)=>{const t=el('text',{x:padL+(mi*3+1)*(barW+gap)+barW/2,y:H-padB+18,'text-anchor':'middle',class:'month-label'},svg);t.textContent=m.m;});
-}
-
-function renderMonthly(rows){
-  let html='',tb=0,tp=0;const hex={bn:'#E3A857',n:'#7387B8',an:'#39B7A6'};
-  const catOf=q=>q<.85?['bn','Bawah Normal (BN)']:q>1.15?['an','Atas Normal (AN)']:['n','Normal (N)'];
-  MONTHS.forEach((m,mi)=>{
-    const r=rows.slice(mi*3,mi*3+3),b=r.reduce((x,y)=>x+y.baseline,0),p=r.reduce((x,y)=>x+y.proj,0),q=p/b,[c,l]=catOf(q),d=p-b;
-    tb+=b;tp+=p;
-    html+=`<tr><td>${m.full} ${m.year}</td><td>${b} mm</td><td><b>${p} mm</b></td><td class="${d<0?'neg':'pos'}">${d>0?'+':''}${d} mm</td>
-      <td><div class="pc"><span>${Math.round(q*100)}%</span><div class="pbar"><i style="width:${Math.min(q,1.5)/1.5*100}%;background:${hex[c]}"></i><u></u></div></div></td>
-      <td>${fmt1(r[0].enso)} °C</td><td><span class="cat ${c}">${l}</span></td></tr>`;});
-  const q=tp/tb,[c,l]=catOf(q),d=tp-tb;
-  html=`${html}`;
-  document.getElementById('monthBody').innerHTML=html+`<tr style="background:var(--bg2)"><td><b>TOTAL 12 BULAN</b></td><td><b>${tb} mm</b></td><td><b>${tp} mm</b></td><td class="${d<0?'neg':'pos'}"><b>${d>0?'+':''}${d} mm</b></td><td><b>${Math.round(q*100)}%</b></td><td></td><td><span class="cat ${c}">${l}</span></td></tr>`;
-}
-function renderTable(rows){
-  let html='',last=null;
-  rows.forEach(r=>{const dv=r.bulan!==last?'month-divider':'';last=r.bulan;
-    html+=`<tr class="${dv}"><td>${r.bulan} ${r.dasarian} ${r.tahun}</td><td>${r.baseline} mm</td><td>${fmt1(r.enso)} °C</td><td>${fmt1(r.koreksi)}</td><td>${fmt1(r.lambda)} mm</td><td><b>${r.proj} mm</b></td><td>${r.p10}–${r.p90} mm</td><td><span class="cat ${r.cat}">${r.catLabel}</span></td></tr>`;});
-  document.getElementById('tblBody').innerHTML=html;
-}
-
-/* ---------- KONTROL ---------- */
-document.getElementById('refreshBtn').addEventListener('click',loadNOAA);
-document.getElementById('manualBtn').addEventListener('click',e=>{
-  manual=!manual;
-  if(manual){manualVals={};MONTHS.forEach((m,i)=>manualVals[m.m]=autoVals[i].v);}
-  e.target.textContent='✎ MODE MANUAL: '+(manual?'HIDUP':'MATI');e.target.classList.toggle('on',manual);
-  buildSliders();render();
-});
-buildSliders();render();loadNOAA();
-</script>
-</body>
-</html>
+/* ---- hitung ---- */
+function compute(){const iod=parseFloat(document.getElementById('iod').value)||0,rows=[],months=[];
+MONTHS.forEach((m,i)=>{const e=ensoOf(i),{b,n}=beta(m.mo),g=GAM0[m.mo]||0,F=Math.exp(-b*e-g*iod),cur=m.y===OBSM.y&&m.mo===OBSM.mo,Nm=NORM(m.mo);
+const cov=[0,1,2].map(d=>cur?Math.max(0,Math.min(1,(OBSM.day-STARTS[d])/LENS[d])):0),nob=cov.reduce((s,c,d)=>s+CLIM[(m.mo-1)*3+d]*c,0),obs=cur?OBSM.mm:0;
+let mean=0;const rs=[0,1,2].map(d=>{const base=CLIM[(m.mo-1)*3+d],al=nob>0?obs*base*cov[d]/nob:0,mn=al+base*(1-cov[d])*F,ds=dist(base*(1-cov[d])*F,CVD,al);mean+=mn;
+const proj=Math.round(mn),r=proj/base,cat=r<.85?'bn':r>1.15?'an':'n';return{bulan:m.m,y:m.y,dn:['I','II','III'][d],base,e,b,n,F,proj,p10:Math.max(0,Math.round(ds.p10)),p90:Math.round(ds.p90),cat,cov:cov[d]}});
+rows.push(...rs);const rem=mean-obs,ds=dist(rem,CVM,obs);let pb,pa;
+if(ds.a===null){pb=obs<.85*Nm?1:0;pa=obs>1.15*Nm?1:0}else{pb=gp(ds.a,(.85*Nm-obs)/ds.th);pa=1-gp(ds.a,(1.15*Nm-obs)/ds.th)}
+const pn=Math.max(0,1-pb-pa),cat=pb>=pn&&pb>=pa?'bn':pa>=pn?'an':'n';
+months.push({m,e,F,b,n,Nm,mean:Math.round(mean),p10:Math.round(ds.p10),p90:Math.round(ds.p90),pb,pn,pa,cat,cur,obs,nob})});
+return{rows,months}}
+const f1=x=>(Math.round(x*10)/10).toFixed(1),CN={bn:'Bawah Normal',n:'Normal',an:'Atas Normal'},HX={bn:'#E3A857',n:'#7387B8',an:'#39B7A6'};
+function render(){const{rows,months}=compute();hero(rows,months);chart(rows);mtab(months);dtab(rows)}
+function hero(rows,months){const tb=rows.reduce((s,r)=>s+r.base,0),tp=rows.reduce((s,r)=>s+r.proj,0),pc=(tp-tb)/tb*100,e=ensoOf(0),ph=e>=.5?'El Niño':e<=-.5?'La Niña':'Netral',c=months[0];
+const st=[['TOTAL BASELINE',tb.toLocaleString('id-ID'),'mm'],['TOTAL PROYEKSI',tp.toLocaleString('id-ID'),'mm',`${pc<0?'▼':'▲'} ${Math.abs(pc).toFixed(1)}% dari baseline`,pc<0?'down':'up'],['FASE ENSO (OKT)',ph,'',`indeks ${f1(e)} °C · IOD ${document.getElementById('iod').value}`],['OBSERVASI WAJO',f1(OBSM.mm),`mm (1–${OBSM.day} Okt)`,`normal ≈ ${Math.round(c.nob)} mm · Sep: ${SEP26} mm (5% dari 68)`,'down']];
+document.getElementById('hero').innerHTML=st.map(s=>`<div class="stat"><div class="l">${s[0]}</div><div class="v">${s[1]}<small>${s[2]}</small></div>${s[3]?`<div class="d ${s[4]||''}">${s[3]}</div>`:''}</div>`).join('')}
+function sliders(){document.getElementById('sd').innerHTML=MONTHS.map((m,i)=>{const v=manual?mv[m.m]:auto[i].v,T={obs:['obs','OBS'],mtd:['mtd','MTD'],fc:['fc','FCST'],stat:['','STAT'],pro:['','PROY']},t=manual?['man','MAN']:T[auto[i].s];
+return`<div class="sc"><div class="m">${m.m} ${String(m.y).slice(2)}</div><input type="range" min="-2" max="3.5" step="0.1" value="${Math.max(-2,Math.min(3.5,v))}" data-m="${m.m}" ${manual?'':'disabled'}><div class="v" id="v-${m.m}">${v.toFixed(2)}</div><div class="src ${t[0]}">${t[1]}</div></div>`}).join('');
+document.querySelectorAll('#sd input').forEach(inp=>inp.addEventListener('input',e=>{const k=e.target.dataset.m,v=parseFloat(e.target.value);mv[k]=v;document.getElementById('v-'+k).textContent=v.toFixed(2);render()}))}
+const NS='http://www.w3.org/2000/svg';const el=(t,a,p)=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);p.appendChild(n);return n};
+function chart(rows){const svg=document.getElementById('chart');svg.innerHTML='';const W=1080,H=420,pl=40,pr=20,pt=50,pb=44,pw=W-pl-pr,ph=H-pt-pb,n=rows.length,g=4,bw=(pw-g*(n-1))/n,mx=Math.max(...rows.map(r=>Math.max(r.p90,r.base)))*1.08;
+for(let i=0;i<=5;i++){const y=pt+ph-ph*i/5;el('line',{x1:pl,x2:W-pr,y1:y,y2:y,stroke:'var(--grid)'},svg);el('text',{x:pl-8,y:y+3,'text-anchor':'end',class:'ax'},svg).textContent=Math.round(mx*i/5)}
+const tip=document.getElementById('tip'),cd=svg.parentElement;
+rows.forEach((r,i)=>{const x=pl+i*(bw+g),bh=r.proj/mx*ph,y=pt+ph-bh;el('line',{x1:x+bw/2,x2:x+bw/2,y1:pt+ph-r.p90/mx*ph,y2:pt+ph-r.p10/mx*ph,stroke:'#3A4A72','stroke-width':1.6},svg);
+const rc=el('rect',{x,y,width:bw,height:Math.max(bh,1.5),rx:2,fill:HX[r.cat],class:'bar'},svg);
+rc.addEventListener('mousemove',ev=>{const b=cd.getBoundingClientRect();tip.style.left=ev.clientX-b.left+14+'px';tip.style.top=ev.clientY-b.top-10+'px';tip.style.opacity=1;tip.innerHTML=`<b>${r.bulan} ${r.dn} ${r.y}</b>${r.cov>0?' (sebagian obs)':''}<br>Baseline: ${r.base} mm<br>Proyeksi: <b>${r.proj} mm</b><br>P10–P90: ${r.p10}–${r.p90} mm<br>ENSO ${f1(r.e)}°C · F ${r.F.toFixed(2)}`});rc.addEventListener('mouseleave',()=>tip.style.opacity=0);
+const yb=pt+ph-r.base/mx*ph;el('line',{x1:x-1,x2:x+bw+1,y1:yb,y2:yb,class:'bt'},svg)});
+const es=v=>pt-8-((Math.max(-2,Math.min(3.5,v))+2)/5.5)*(pt-22);el('path',{d:rows.map((r,i)=>(i?'L':'M')+(pl+i*(bw+g)+bw/2)+' '+es(r.e)).join(' '),class:'el'},svg);
+MONTHS.forEach((m,mi)=>el('text',{x:pl+(mi*3+1)*(bw+g)+bw/2,y:H-pb+18,'text-anchor':'middle',class:'ml'},svg).textContent=m.m)}
+function mtab(ms){let h='',tb=0,tp=0;ms.forEach(c=>{const q=c.mean/c.Nm,d=c.mean-c.Nm;tb+=c.Nm;tp+=c.mean;
+h+=`<tr><td>${c.m.full} ${c.m.y}${c.cur?' ●':''}</td><td>${c.Nm} mm</td><td><b>${c.mean} mm</b></td><td>${c.p10}–${c.p90} mm</td><td>${Math.round(q*100)}% <span class="${d<0?'neg':'pos'}">(${d>0?'+':''}${d})</span></td><td>${f1(c.e)} °C</td><td>${c.F.toFixed(2)}</td>
+<td><div style="display:flex;align-items:center;gap:8px"><div class="pb"><i style="width:${c.pb*100}%;background:#E3A857"></i><i style="width:${c.pn*100}%;background:#7387B8"></i><i style="width:${c.pa*100}%;background:#39B7A6"></i></div><span>${Math.round(c.pb*100)}/${Math.round(c.pn*100)}/${Math.round(c.pa*100)}%</span></div></td><td><span class="cat ${c.cat}">${CN[c.cat]}</span></td></tr>`});
+document.getElementById('mb2').innerHTML=h+`<tr style="background:var(--bg2)"><td><b>TOTAL 12 BULAN</b></td><td><b>${tb} mm</b></td><td><b>${tp} mm</b></td><td>—</td><td><b>${Math.round(tp/tb*100)}%</b></td><td colspan="4">● = bulan berjalan (observasi + proyeksi sisa)</td></tr>`}
+function dtab(rows){let h='',last=null;rows.forEach(r=>{h+=`<tr class="${r.bulan!==last?'md':''}"><td>${r.bulan} ${r.dn} ${r.y}${r.cov>=1?' · obs':r.cov>0?' · obs/proy':''}</td><td>${r.base} mm</td><td>${f1(r.e)} °C</td><td>${r.b.toFixed(2)}${r.n?' ★':''}</td><td>${r.F.toFixed(2)}</td><td><b>${r.proj} mm</b></td><td>${r.p10}–${r.p90} mm</td><td><span class="cat ${r.cat}">${CN[r.cat]}</span></td></tr>`;last=r.bulan});document.getElementById('tb').innerHTML=h}
+document.getElementById('rf').onclick=load;document.getElementById('iod').oninput=render;
+document.getElementById('mb').onclick=e=>{manual=!manual;if(manual){mv={};MONTHS.forEach((m,i)=>mv[m.m]=auto[i].v)}e.target.textContent='✎ MANUAL: '+(manual?'HIDUP':'MATI');e.target.classList.toggle('on',manual);sliders();render()};
+auto=ensoAuto();sliders();render();load();
+</script></body></html>
