@@ -30,7 +30,7 @@ h1{font:600 clamp(28px,4.2vw,48px)/1.06 Fraunces,serif;margin:0 0 12px}h1 em{fon
 .sc input::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:9px;border-radius:3px;background:var(--ink)}
 .legend{display:flex;gap:18px;flex-wrap:wrap;font:11px 'IBM Plex Mono',monospace;color:var(--mut);margin-bottom:6px}.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
 #chart{width:100%;height:auto;display:block}.bar:hover{filter:brightness(1.25)}.bt{stroke:#4C5C86;stroke-width:1.4;stroke-dasharray:2 2}.el{fill:none;stroke:var(--dry);stroke-width:2}
-.ax{font:9.5px 'IBM Plex Mono',monospace;fill:var(--dim)}.ml{font:16px 'IBM Plex Mono',monospace;fill:var(--mut)}
+.ax{font:9.5px 'IBM Plex Mono',monospace;fill:var(--dim)}.ml{font:10px 'IBM Plex Mono',monospace;fill:var(--mut)}
 #tip{position:absolute;pointer-events:none;background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:8px 11px;font:11.5px/1.6 'IBM Plex Mono',monospace;opacity:0;white-space:nowrap;z-index:5}#tip b{color:var(--dry)}
 .tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--el)}table{width:100%;border-collapse:collapse;min-width:820px}
 th{font:9.5px 'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);text-align:left;padding:10px;border-bottom:1px solid var(--line)}
@@ -45,7 +45,7 @@ footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);font:11
 </style></head><body><div class="wrap">
 <div class="eye" id="period">ZOM 566 · WAJO · PRAKIRAAN 12 BULAN KE DEPAN</div>
 <h1>Ringkasan curah hujan tahunan,<br><em>dan prakiraan 12 bulan ke depan</em>.</h1>
-<p class="sub">Kartu ringkasan di atas menampilkan total baseline dan estimasi model untuk Januari–Desember tahun kalender berjalan. Grafik, slider ENSO, tabel bulanan, dan rincian dasarian di bawah tetap menampilkan prakiraan bergulir 12 bulan ke depan, mulai bulan berikutnya. Data hujan untuk pelatihan tetap dibekukan pada 2012–2025. Total tahun berjalan adalah estimasi model, bukan akumulasi hujan aktual, karena data observasi hujan setelah 2025 tidak dimasukkan ke TELE. Bukan prakiraan resmi BMKG.</p>
+<p class="sub">Kartu ringkasan membandingkan normal klimatologi tahunan ZOM 566 (1991–2020; tidak khusus untuk satu tahun) dengan estimasi model Januari–Desember tahun kalender berjalan. Grafik, slider ENSO, tabel bulanan, dan rincian dasarian tetap menampilkan prakiraan bergulir 12 bulan ke depan, mulai bulan berikutnya. Data hujan untuk pelatihan tetap dibekukan pada 2008–2025. Total tahun berjalan adalah estimasi model, bukan akumulasi hujan aktual, karena data observasi hujan setelah 2025 tidak dimasukkan ke TELE. Bukan prakiraan resmi BMKG.</p>
 <div class="hero" id="hero"></div>
 
 <div class="sh"><b>01</b><h2>Indeks ENSO & IOD</h2><i></i></div>
@@ -55,7 +55,7 @@ footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);font:11
 <p class="msg" id="sm"></p><div class="sliders" id="sd"></div></div>
 
 <div class="sh"><b>02</b><h2>Grafik prakiraan 12 bulan ke depan</h2><i></i></div>
-<div class="card" style="position:relative"><div class="legend"><span><i class="sw" style="background:rgba(255,255,255,0.4);border:1px solid var(--line)"></i>Rata-rata tahunan</span><span><i class="sw" style="background:var(--dry)"></i>Bawah Normal</span><span><i class="sw" style="background:var(--neu)"></i>Normal</span><span><i class="sw" style="background:var(--wet)"></i>Atas Normal</span><span>Garis atas = indeks ENSO · whisker = P10–P90</span></div>
+<div class="card" style="position:relative"><div class="legend"><span><i class="sw" style="background:rgba(141,160,199,.32);border:1px solid #8DA0C7"></i>Baseline klimatologi (batang latar)</span><span><i class="sw" style="background:var(--dry)"></i>Proyeksi Bawah Normal</span><span><i class="sw" style="background:var(--neu)"></i>Proyeksi Normal</span><span><i class="sw" style="background:var(--wet)"></i>Proyeksi Atas Normal</span><span>Garis kuning = ENSO · putus-putus = nilai baseline · whisker = P10–P90 Gamma</span></div>
 <svg id="chart" viewBox="0 0 1080 420"></svg><div id="tip"></div></div>
 
 <div class="sh"><b>03</b><h2>Total per bulan & peluang kategori — prakiraan 12 bulan</h2><i></i></div>
@@ -73,8 +73,8 @@ footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);font:11
 <div class="mc"><h3>Koreksi ENSO</h3><p>Faktor dikalibrasi dari hubungan historis log-rasio hujan terhadap Niño-3.4. Jika data pasangan tidak cukup, koreksi ENSO dinonaktifkan (F = 1).</p><div class="fm">ln(R/R₀) = a + b·ENSO + ε<br>F = exp(a + b·ENSO)</div></div>
 <div class="mc"><h3>Kalibrasi koefisien</h3><p>Regresi log-rasio dengan intersep; koefisien kemiringan disusutkan ke nol untuk mengurangi ekstrem pada sampel terbatas. Minimal 8 pasangan valid per bulan adalah syarat awal, bukan bukti validasi.</p><div class="fm">y = ln(R/R₀) = a + b·ENSO<br>b = b_raw × n/(n + 8)</div></div>
 <div class="mc"><h3>Selang Gamma</h3><p>Hujan kontinu, condong ke kanan, bersatuan mm. CV dasarian 0,9; bulanan 0,45.</p><div class="fm">α = 1/CV², θ = λ'/α<br>P10/P90 = GAMMA.INV(p, α, θ)</div></div></div>
-<div class="cv"><b>Keterbatasan dan status ilmiah:</b> Data hujan TELE dibekukan pada 2012–2025. Koefisien ENSO dilatih dari pasangan hujan historis dan Niño-3.4 historis NOAA. Nilai berlabel FCST berasal dari prakiraan yang dikirim melalui Spreadsheet/Apps Script (dalam konfigurasi ini, input BoM), sedangkan STAT adalah estimasi statistik. Definisi indeks BoM dan NOAA dapat berbeda, sehingga koreksi ENSO lintas-sumber ini bersifat eksperimental dan perlu diselaraskan sebelum dipakai sebagai prakiraan operasional; nilai ENSO yang hilang tidak diganti dengan nol. Bulan dengan kurang dari 8 pasangan valid tidak diberi koreksi ENSO. Data hujan nol tidak masuk regresi log-rasio, sehingga pengaruh terhadap peluang bulan kering belum dimodelkan secara terpisah. IOD belum memengaruhi proyeksi. CV Gamma 0,9 (dasarian) dan 0,45 (bulanan) masih asumsi, bukan hasil kalibrasi. Jika observasi bulan berjalan tersedia hanya sebagai total bulanan berjalan, pembagian ke dasarian merupakan alokasi berdasarkan normal, bukan pengukuran dasarian aktual. Pastikan CLIM benar-benar sesuai normal ZOM 566 1991–2020 dan uji hindcast terhadap baseline sebelum menilai keterampilan prediksi. Ini model eksperimental, bukan prakiraan resmi BMKG; bandingkan dengan informasi terbaru di iklim.bmkg.go.id.</div>
-<footer>SUMBER: NOAA CPC untuk seri historis Niño-3.4 dan input ENSO default; normal ZOM 566 (1991–2020); telemetri BBWS Pompengan Jeneberang. Prakiraan ENSO masa depan adalah estimasi statistik/analog, bukan prakiraan resmi NOAA. Data latih hujan tetap 2012–2025. Model eksperimental.</footer></div>
+<div class="cv"><b>Keterbatasan dan status ilmiah:</b> Data hujan TELE dibekukan pada 2008–2025, dan hanya rentang tahun tersebut digunakan saat kalibrasi. Koefisien ENSO dilatih dari pasangan hujan historis dan Niño-3.4 historis NOAA. Nilai berlabel FCST berasal dari prakiraan yang dikirim melalui Spreadsheet/Apps Script (dalam konfigurasi ini, input BoM), sedangkan STAT adalah estimasi statistik. Definisi indeks BoM dan NOAA dapat berbeda, sehingga koreksi ENSO lintas-sumber ini bersifat eksperimental dan perlu diselaraskan sebelum dipakai sebagai prakiraan operasional; nilai ENSO yang hilang tidak diganti dengan nol. Bulan dengan kurang dari 8 pasangan valid tidak diberi koreksi ENSO. Data hujan nol tidak masuk regresi log-rasio, sehingga pengaruh terhadap peluang bulan kering belum dimodelkan secara terpisah. IOD belum memengaruhi proyeksi. CV Gamma 0,9 (dasarian) dan 0,45 (bulanan) masih asumsi, bukan hasil kalibrasi. Jika observasi bulan berjalan tersedia hanya sebagai total bulanan berjalan, pembagian ke dasarian merupakan alokasi berdasarkan normal, bukan pengukuran dasarian aktual. Pastikan CLIM benar-benar sesuai normal ZOM 566 1991–2020 dan uji hindcast terhadap baseline sebelum menilai keterampilan prediksi. Ini model eksperimental, bukan prakiraan resmi BMKG; bandingkan dengan informasi terbaru di iklim.bmkg.go.id.</div>
+<footer>SUMBER: NOAA CPC untuk seri historis Niño-3.4 dan estimasi statistik ENSO; normal ZOM 566 (1991–2020); telemetri BBWS Pompengan Jeneberang. Prakiraan ENSO masa depan adalah estimasi statistik/analog, bukan prakiraan resmi NOAA. Data latih hujan tetap 2008–2025. Model eksperimental.</footer></div>
 <script>
 const CLIM=[41,34,39,31,35,31,34,44,57,60,71,89,107,79,101,100,91,73,74,66,41,25,21,22,23,18,27,37,33,41,48,47,53,45,38,55];
 const NM=['','JAN','FEB','MAR','APR','MEI','JUN','JUL','AGU','SEP','OKT','NOV','DES'];
@@ -82,8 +82,6 @@ const FL=['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus',
 const SN={10:2.22,11:2.47,12:2.39,1:2.28,2:1.96,3:1.56,4:.99,5:.41,6:.1,7:-.03,8:0,9:0};
 const MIN_N_ENSO=8, SHRINK_K=8;
 const CVD=.9,CVM=.45,STARTS=[0,10,20],LENS=[10,10,11];
-/* Dataset pelatihan hujan tetap: 2012–2025. Data tahun berikutnya tidak ditambahkan ke TELE. */
-/* Telemetri Wajo historis (mm/bulan). Kolom e lama tidak digunakan untuk kalibrasi. */
 /* Dataset pelatihan hujan tetap: 2008–2025. Data tahun berikutnya tidak ditambahkan ke TELE. */
 /* Telemetri Wajo historis (mm/bulan). Kolom e lama tidak digunakan untuk kalibrasi. */
 const TELE = [
@@ -104,12 +102,14 @@ const TELE = [
   /* 2022 */ {y:2022,mo:1,mm:65.5,e:0},{y:2022,mo:2,mm:109.6,e:0},{y:2022,mo:3,mm:106.8,e:0},{y:2022,mo:4,mm:189.8,e:0},{y:2022,mo:5,mm:263.1,e:0},{y:2022,mo:6,mm:435.9,e:0},{y:2022,mo:7,mm:306.4,e:0},{y:2022,mo:8,mm:366.3,e:0},{y:2022,mo:9,mm:197.1,e:0},{y:2022,mo:10,mm:276.1,e:0},{y:2022,mo:11,mm:158.2,e:0},{y:2022,mo:12,mm:148.2,e:0},
   /* 2023 */ {y:2023,mo:1,mm:50.5,e:0},{y:2023,mo:2,mm:83.4,e:0},{y:2023,mo:3,mm:180.1,e:0},{y:2023,mo:4,mm:151.6,e:0},{y:2023,mo:5,mm:251,e:0},{y:2023,mo:6,mm:220.3,e:0},{y:2023,mo:7,mm:164.1,e:0},{y:2023,mo:8,mm:52.5,e:0},{y:2023,mo:9,mm:18.5,e:0},{y:2023,mo:10,mm:31.6,e:0},{y:2023,mo:11,mm:165.1,e:0},{y:2023,mo:12,mm:91,e:0},
   /* 2024 */ {y:2024,mo:1,mm:139.8,e:0},{y:2024,mo:2,mm:78,e:0},{y:2024,mo:3,mm:147.2,e:0},{y:2024,mo:4,mm:380.5,e:0},{y:2024,mo:5,mm:450.2,e:0},{y:2024,mo:6,mm:256.1,e:0},{y:2024,mo:7,mm:470.9,e:0},{y:2024,mo:8,mm:131.3,e:0},{y:2024,mo:9,mm:116.6,e:0},{y:2024,mo:10,mm:137.2,e:0},{y:2024,mo:11,mm:185.7,e:0},{y:2024,mo:12,mm:126.4,e:0},
-  /* 2025 */ {y:2025,mo:1,mm:56,e:0},{y:2025,mo:2,mm:114,e:0},{y:2025,mo:3,mm:140.4,e:0},{y:2025,mo:4,mm:155.2,e:0},{y:2025,mo:5,mm:260.4,e:0},{y:2025,mo:6,mm:291.6,e:0},{y:2025,mo:7,mm:134,e:0},{y:2025,mo:8,mm:136.3,e:0},{y:2025,mo:9,mm:179,e:0},{y:2025,mo:10,mm:220.9,e:0},{y:2025,mo:11,mm:66.3,e:0},{y:2025,mo:12,mm:71.1,e:0}
+  /* 2025 */ {y:2025,mo:1,mm:56,e:0},{y:2025,mo:2,mm:114,e:0},{y:2025,mo:3,mm:140.4,e:0},{y:2025,mo:4,mm:155.2,e:0},{y:2025,mo:5,mm:260.4,e:0},{y:2025,mo:6,mm:291.6,e:0},{y:2025,mo:7,mm:134,e:0},{y:2025,mo:8,mm:136.3,e:0},{y:2025,mo:9,mm:179,e:0},{y:2025,mo:10,mm:220.9,e:0},{y:2025,mo:11,mm:66.3,e:0},{y:2025,mo:12,mm:71.1,e:0},
+
 ];
 // Data hujan terakhir yang tercatat di TELE, khusus untuk informasi riwayat dan validasi.
 const validRain=TELE.filter(t=>Number.isFinite(t.mm)&&t.mm>=0).sort((a,b)=>a.y-b.y||a.mo-b.mo);
 const ORIGIN=validRain[validRain.length-1] || {y:2025,mo:12,mm:null};
-// Data latih hujan ditetapkan 2012–2025; tidak perlu menambahkan TELE setiap tahun.
+// Data latih hujan tetap 2008–2025; tidak perlu menambahkan TELE setiap tahun.
+const TRAIN_START_YEAR=2008;
 const TRAIN_END_YEAR=2025;
 const now=new Date();
 const REPORT_YEAR=now.getFullYear();
@@ -132,7 +132,7 @@ const NUM=s=>s!==''&&!isNaN(+s);
 const pSst=t=>{const o={};t.split(/\r?\n/).forEach(l=>{const p=l.trim().split(/\s+/);if(p.length>=10&&p.slice(0,10).every(NUM)){const y=+p[0],m=+p[1];if(y>1900&&m>=1&&m<=12)o[y+'-'+m]=+p[9]}});return o};
 const pRn=t=>{const o={};t.split(/\r?\n/).forEach(l=>{const p=l.trim().split(/\s+/);if(p.length===3&&p.every(NUM)){const y=+p[0],m=+p[1];if(y>1900&&m>=1&&m<=12)o[y+'-'+m]=+p[2]}});return o};
 /* Isi dengan URL web app Apps Script (/exec) milik Anda; jangan membagikan halaman ini bila URL terisi. */
-const BRIDGE_URL='https://script.google.com/macros/s/AKfycby8f9myEX1bE6pqNImiQS9XIW7rLYW2z_25xnWFxm7ZMc1hm2GTThLiPEigsIEQuvLq/exec';
+const BRIDGE_URL='https://script.google.com/macros/s/AKfycbww7coLTq4ZDrlhL3wt7HIJxo1LMDI_xp86V_oxUi8koyMYXsRvoEwVji5jU8587J1D/exec';
 window.__b=null;
 const pBr=t=>{const j=JSON.parse(t);if(!j.ok)throw new Error('jembatan gagal');window.__b=j;return j.series};
 const SRC=[...(BRIDGE_URL?[{n:'Apps Script → NOAA CPC',u:BRIDGE_URL,p:pBr}]:[]),{n:'NOAA CPC · sstoi.indices',u:'https://www.cpc.ncep.noaa.gov/data/indices/sstoi.indices',p:pSst},{n:'NOAA CPC · Rnino34.ascii.txt',u:'https://www.cpc.ncep.noaa.gov/data/indices/Rnino34.ascii.txt',p:pRn}];
@@ -172,8 +172,10 @@ let msg=mode==='live'?'Diambil '+fAt.toLocaleString('id-ID')+'.':mode==='cache'?
    Shrinkage b ke nol mengurangi koefisien ekstrem, bukan validasi model.
 */
 function beta(mo, cutoffYear=TRAIN_END_YEAR+1){
+  // Model akhir memakai rentang 2008–2025. Untuk hindcast,
+  // cutoffYear mengecualikan tahun target dari proses kalibrasi.
   const P=TELE.filter(t=>{
-    if(t.mo!==mo || t.y>=cutoffYear) return false;
+    if(t.mo!==mo || t.y<TRAIN_START_YEAR || t.y>=cutoffYear) return false;
     if(!Number.isFinite(t.mm) || t.mm<=0) return false;
     const x=allObs[t.y+'-'+t.mo];
     return Number.isFinite(x) && Number.isFinite(NORM(mo)) && NORM(mo)>0;
@@ -237,31 +239,70 @@ function hero(rows,months){
   const last=`${FL[ORIGIN.mo]} ${ORIGIN.y}`;
   const ensSrc=({obs:'observasi bulanan NOAA',mtd:'rerata mingguan bulan berjalan NOAA',fc:'prakiraan Spreadsheet/BoM (cadangan)',stat:'estimasi statistik berbasis seri NOAA',pro:'lintasan analog snapshot'}[cur.s]||'sumber tidak teridentifikasi');
   const st=[
-    ['TOTAL BASELINE '+REPORT_YEAR,tb.toLocaleString('id-ID'),'mm',`normal Januari–Desember ${REPORT_YEAR}`],
-    ['TOTAL PROYEKSI '+REPORT_YEAR,tp.toLocaleString('id-ID'),'mm',`${pc<0?'▼':'▲'} ${Math.abs(pc).toFixed(1)}% dari baseline · estimasi model Jan–Des ${REPORT_YEAR}, bukan total aktual`,pc<0?'down':'up'],
+    ['BASELINE KLIMATOLOGI',tb.toLocaleString('id-ID'),'mm','Normal Jan–Des ZOM 566 periode 1991–2020; bukan prakiraan khusus '+REPORT_YEAR],
+    ['ESTIMASI MODEL '+REPORT_YEAR,tp.toLocaleString('id-ID'),'mm',`${pc<0?'▼':'▲'} ${Math.abs(pc).toFixed(1)}% dari normal klimatologi · estimasi Jan–Des ${REPORT_YEAR}, bukan total aktual`,pc<0?'down':'up'],
     ['ENSO TERKINI',ph,'',`${FL[now.getMonth()]} ${now.getFullYear()} · Niño-3.4 ${f1(e)} °C · sumber: ${ensSrc}`],
-    ['AKHIR DATA LATIH HUJAN',f1(ORIGIN.mm),'mm',`TELE tetap 2012–2025; terakhir ${last}`,'']
+    ['AKHIR DATA LATIH HUJAN',f1(ORIGIN.mm),'mm',`TELE tetap 2008–2025; terakhir ${last}`,'']
   ];
   document.getElementById('hero').innerHTML=st.map(s=>`<div class="stat"><div class="l">${s[0]}</div><div class="v">${s[1]}<small>${s[2]}</small></div>${s[3]?`<div class="d ${s[4]||''}">${s[3]}</div>`:''}</div>`).join('')}
 function sliders(){document.getElementById('sd').innerHTML=MONTHS.map((m,i)=>{const v=manual?mv[m.m]:auto[i].v,T={obs:['obs','OBS'],mtd:['mtd','MTD'],fc:['fc','FCST'],stat:['','STAT'],pro:['','PROY']},t=manual?['man','MAN']:T[auto[i].s];
 return`<div class="sc"><div class="m">${m.m} ${String(m.y).slice(2)}</div><input type="range" min="-2" max="3.5" step="0.1" value="${Math.max(-2,Math.min(3.5,v))}" data-m="${m.m}" ${manual?'':'disabled'}><div class="v" id="v-${m.m}">${v.toFixed(2)}</div><div class="src ${t[0]}">${t[1]}</div></div>`}).join('');
 document.querySelectorAll('#sd input').forEach(inp=>inp.addEventListener('input',e=>{const k=e.target.dataset.m,v=parseFloat(e.target.value);mv[k]=v;document.getElementById('v-'+k).textContent=v.toFixed(2);render()}))}
 const NS='http://www.w3.org/2000/svg';const el=(t,a,p)=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);p.appendChild(n);return n};
-function chart(months){const svg=document.getElementById('chart');svg.innerHTML='';const W=1080,H=420,pl=48,pr=20,pt=50,pb=44,pw=W-pl-pr,ph=H-pt-pb,n=months.length,g=18,bw=(pw-g*(n-1))/n,mx=Math.max(...months.map(r=>Math.max(r.p90,r.Nm,r.mean)))*1.08;
-for(let i=0;i<=5;i++){const y=pt+ph-ph*i/5;el('line',{x1:pl,x2:W-pr,y1:y,y2:y,stroke:'var(--grid)'},svg);el('text',{x:pl-8,y:y+3,'text-anchor':'end',class:'ax'},svg).textContent=Math.round(mx*i/5)}
-const tip=document.getElementById('tip'),cd=svg.parentElement;
-months.forEach((r,i)=>{const x=pl+i*(bw+g),bh=r.mean/mx*ph,y=pt+ph-bh,bhBase=r.Nm/mx*ph,yBase=pt+ph-bhBase;
-// Bayangan baseline digeser ke kiri 6 piksel
-el('rect',{x:x-10,y:yBase,width:bw,height:Math.max(bhBase,1.5),rx:3,fill:'rgba(255,255,255,0.4)'},svg);
-el('line',{x1:x+bw/2,x2:x+bw/2,y1:pt+ph-r.p90/mx*ph,y2:pt+ph-r.p10/mx*ph,stroke:'#3A4A72','stroke-width':1.8},svg);
-// Batang proyeksi dikembalikan menjadi solid pekat (tanpa opacity)
-const rc=el('rect',{x,y,width:bw,height:Math.max(bh,1.5),rx:3,fill:HX[r.cat],class:'bar'},svg);
-rc.addEventListener('mousemove',ev=>{const b=cd.getBoundingClientRect();tip.style.left=ev.clientX-b.left+14+'px';tip.style.top=ev.clientY-b.top-10+'px';tip.style.opacity=1;tip.innerHTML=`<b>${r.m.full} ${r.m.y}</b><br>Baseline: ${r.Nm} mm<br>Estimasi model: <b>${r.mean} mm</b><br>P10–P90: ${r.p10}–${r.p90} mm<br>Niño-3.4 ${f1(r.e)}°C · F ${r.F.toFixed(2)}`});rc.addEventListener('mouseleave',()=>tip.style.opacity=0);
-const yb=pt+ph-r.Nm/mx*ph;
-// Garis putus-putus batas normal ditarik lebih panjang ke kiri menutupi bayangan
-el('line',{x1:x-8,x2:x+bw+2,y1:yb,y2:yb,class:'bt'},svg)});
-const es=v=>pt+36-((Math.max(-2,Math.min(3.5,v))+2)/5.5)*30;el('path',{d:months.map((r,i)=>(i?'L':'M')+(pl+i*(bw+g)+bw/2)+' '+es(r.e)).join(' '),class:'el'},svg);
-months.forEach((m,mi)=>el('text',{x:pl+mi*(bw+g)+bw/2,y:H-pb+18,'text-anchor':'middle',class:'ml'},svg).textContent=m.m.m+' '+String(m.m.y).slice(2))}
+function chart(months){
+  const svg=document.getElementById('chart');
+  svg.innerHTML='';
+  const W=1080,H=420,pl=48,pr=20,pt=50,pb=44,pw=W-pl-pr,ph=H-pt-pb,n=months.length,g=18,bw=(pw-g*(n-1))/n;
+  const mx=Math.max(...months.map(r=>Math.max(r.p90,r.Nm,r.mean)))*1.08;
+  for(let i=0;i<=5;i++){
+    const y=pt+ph-ph*i/5;
+    el('line',{x1:pl,x2:W-pr,y1:y,y2:y,stroke:'var(--grid)'},svg);
+    el('text',{x:pl-8,y:y+3,'text-anchor':'end',class:'ax'},svg).textContent=Math.round(mx*i/5);
+  }
+  const tip=document.getElementById('tip'),cd=svg.parentElement;
+  months.forEach((r,i)=>{
+    const x=pl+i*(bw+g);
+    const baseH=r.Nm/mx*ph,baseY=pt+ph-baseH;
+    const projH=r.mean/mx*ph,projY=pt+ph-projH;
+    // Baseline climatologi: batang latar netral, lebih lebar daripada batang proyeksi.
+    const baseX=x+bw*0.06,baseW=bw*0.88;
+    el('rect',{
+      x:baseX,y:baseY,width:baseW,height:Math.max(baseH,1.5),rx:3,
+      fill:'rgba(141,160,199,0.24)',stroke:'rgba(141,160,199,0.9)','stroke-width':1.1,
+      class:'baseline-bar'
+    },svg);
+    // Rentang ketidakpastian P10–P90 berada di tengah batang bulan.
+    el('line',{
+      x1:x+bw/2,x2:x+bw/2,
+      y1:pt+ph-r.p90/mx*ph,y2:pt+ph-r.p10/mx*ph,
+      stroke:'#3A4A72','stroke-width':1.8
+    },svg);
+    // Proyeksi berwarna di depan dan lebih ramping agar batang baseline tetap terlihat.
+    const projW=bw*0.54,projX=x+(bw-projW)/2;
+    const rc=el('rect',{
+      x:projX,y:projY,width:projW,height:Math.max(projH,1.5),rx:3,
+      fill:HX[r.cat],class:'bar'
+    },svg);
+    rc.addEventListener('mousemove',ev=>{
+      const b=cd.getBoundingClientRect();
+      tip.style.left=ev.clientX-b.left+14+'px';
+      tip.style.top=ev.clientY-b.top-10+'px';
+      tip.style.opacity=1;
+      tip.innerHTML=`<b>${r.m.full} ${r.m.y}</b><br>Baseline klimatologi: ${r.Nm} mm<br>Estimasi model: <b>${r.mean} mm</b><br>Selisih: ${r.mean-r.Nm>0?'+':''}${r.mean-r.Nm} mm<br>P10–P90: ${r.p10}–${r.p90} mm<br>Niño-3.4 ${f1(r.e)}°C · F ${r.F.toFixed(2)}`;
+    });
+    rc.addEventListener('mouseleave',()=>tip.style.opacity=0);
+    // Garis putus-putus tepat pada nilai baseline untuk pembacaan yang cepat.
+    el('line',{x1:x-2,x2:x+bw+2,y1:baseY,y2:baseY,class:'bt'},svg);
+  });
+  const es=v=>pt+36-((Math.max(-2,Math.min(3.5,v))+2)/5.5)*30;
+  el('path',{
+    d:months.map((r,i)=>(i?'L':'M')+(pl+i*(bw+g)+bw/2)+' '+es(r.e)).join(' '),
+    class:'el'
+  },svg);
+  months.forEach((m,mi)=>el('text',{
+    x:pl+mi*(bw+g)+bw/2,y:H-pb+18,'text-anchor':'middle',class:'ml'
+  },svg).textContent=m.m.m+' '+String(m.m.y).slice(2));
+}
 function mtab(ms){let h='',tb=0,tp=0;ms.forEach(c=>{const q=c.mean/c.Nm,d=c.mean-c.Nm;tb+=c.Nm;tp+=c.mean;
 h+=`<tr><td>${c.m.full} ${c.m.y}</td><td>${c.Nm} mm</td><td><b>${c.mean} mm</b></td><td>${c.p10}–${c.p90} mm</td><td>${Math.round(q*100)}% <span class="${d<0?'neg':'pos'}">(${d>0?'+':''}${d})</span></td><td>${f1(c.e)} °C</td><td>${c.F.toFixed(2)}${c.fitOK?'':' *'}</td>
 <td><div style="display:flex;align-items:center;gap:8px"><div class="pb"><i style="width:${c.pb*100}%;background:#E3A857"></i><i style="width:${c.pn*100}%;background:#7387B8"></i><i style="width:${c.pa*100}%;background:#39B7A6"></i></div><span>${Math.round(c.pb*100)}/${Math.round(c.pn*100)}/${Math.round(c.pa*100)}%</span></div></td><td><span class="cat ${c.cat}">${CN[c.cat]}</span></td></tr>`});
