@@ -84,7 +84,15 @@ const MIN_N_ENSO=8, SHRINK_K=8;
 const CVD=.9,CVM=.45,STARTS=[0,10,20],LENS=[10,10,11];
 /* Dataset pelatihan hujan tetap: 2008–2025. Data tahun berikutnya tidak ditambahkan ke TELE. */
 /* Telemetri Wajo historis (mm/bulan). Kolom e lama tidak digunakan untuk kalibrasi. */
+/* Dataset pelatihan hujan tetap: 2000–2025 (2004 & 2005 kosong). Data tahun berikutnya tidak ditambahkan ke TELE. */
+/* Telemetri Wajo historis (mm/bulan). Kolom e lama tidak digunakan untuk kalibrasi. */
 const TELE = [
+  /* 2000 */ {y:2000,mo:1,mm:60,e:0},{y:2000,mo:2,mm:12,e:0},{y:2000,mo:3,mm:99,e:0},{y:2000,mo:4,mm:108,e:0},{y:2000,mo:5,mm:160,e:0},{y:2000,mo:6,mm:637,e:0},{y:2000,mo:7,mm:244,e:0},{y:2000,mo:8,mm:164,e:0},{y:2000,mo:9,mm:118,e:0},{y:2000,mo:10,mm:175,e:0},{y:2000,mo:11,mm:148,e:0},{y:2000,mo:12,mm:67,e:0},
+  /* 2001 */ {y:2001,mo:1,mm:226,e:0},{y:2001,mo:2,mm:101,e:0},{y:2001,mo:3,mm:138,e:0},{y:2001,mo:4,mm:396,e:0},{y:2001,mo:5,mm:223,e:0},{y:2001,mo:6,mm:388,e:0},{y:2001,mo:7,mm:84,e:0},{y:2001,mo:8,mm:37,e:0},{y:2001,mo:9,mm:227,e:0},{y:2001,mo:10,mm:56,e:0},{y:2001,mo:11,mm:136,e:0},{y:2001,mo:12,mm:113,e:0},
+  /* 2002 */ {y:2002,mo:1,mm:244,e:0},{y:2002,mo:2,mm:66,e:0},{y:2002,mo:3,mm:139,e:0},{y:2002,mo:4,mm:314,e:0},{y:2002,mo:5,mm:397,e:0},{y:2002,mo:6,mm:305,e:0},{y:2002,mo:7,mm:43,e:0},{y:2002,mo:8,mm:18,e:0},{y:2002,mo:9,mm:0,e:0},{y:2002,mo:10,mm:0,e:0},{y:2002,mo:11,mm:110,e:0},{y:2002,mo:12,mm:277,e:0},
+  /* 2003 */ {y:2003,mo:1,mm:91,e:0},{y:2003,mo:2,mm:0,e:0},{y:2003,mo:3,mm:0,e:0},{y:2003,mo:4,mm:614,e:0},{y:2003,mo:5,mm:325,e:0},{y:2003,mo:6,mm:442,e:0},{y:2003,mo:7,mm:370,e:0},{y:2003,mo:8,mm:233,e:0},{y:2003,mo:9,mm:143,e:0},{y:2003,mo:10,mm:41,e:0},{y:2003,mo:11,mm:142,e:0},{y:2003,mo:12,mm:262,e:0},
+  /* 2006 */ {y:2006,mo:1,mm:0,e:0},{y:2006,mo:2,mm:158,e:0},{y:2006,mo:3,mm:194,e:0},{y:2006,mo:4,mm:117,e:0},{y:2006,mo:5,mm:245,e:0},{y:2006,mo:6,mm:412,e:0},{y:2006,mo:7,mm:31,e:0},{y:2006,mo:8,mm:11,e:0},{y:2006,mo:9,mm:10,e:0},{y:2006,mo:10,mm:0,e:0},{y:2006,mo:11,mm:175,e:0},{y:2006,mo:12,mm:110,e:0},
+  /* 2007 */ {y:2007,mo:1,mm:29,e:0},{y:2007,mo:2,mm:90,e:0},{y:2007,mo:3,mm:95,e:0},{y:2007,mo:4,mm:182,e:0},{y:2007,mo:5,mm:475,e:0},{y:2007,mo:6,mm:576,e:0},{y:2007,mo:7,mm:205,e:0},{y:2007,mo:8,mm:142,e:0},{y:2007,mo:9,mm:12,e:0},{y:2007,mo:10,mm:98,e:0},{y:2007,mo:11,mm:187,e:0},{y:2007,mo:12,mm:108,e:0},
   /* 2008 */ {y:2008,mo:1,mm:114,e:0},{y:2008,mo:2,mm:5,e:0},{y:2008,mo:3,mm:269,e:0},{y:2008,mo:4,mm:329,e:0},{y:2008,mo:5,mm:356,e:0},{y:2008,mo:6,mm:276,e:0},{y:2008,mo:7,mm:478,e:0},{y:2008,mo:8,mm:263,e:0},{y:2008,mo:9,mm:99,e:0},{y:2008,mo:10,mm:194,e:0},{y:2008,mo:11,mm:139,e:0},{y:2008,mo:12,mm:70,e:0},
   /* 2009 */ {y:2009,mo:1,mm:22,e:0},{y:2009,mo:2,mm:0,e:0},{y:2009,mo:3,mm:127,e:0},{y:2009,mo:4,mm:115,e:0},{y:2009,mo:5,mm:157,e:0},{y:2009,mo:6,mm:95,e:0},{y:2009,mo:7,mm:93,e:0},{y:2009,mo:8,mm:0,e:0},{y:2009,mo:9,mm:33,e:0},{y:2009,mo:10,mm:83,e:0},{y:2009,mo:11,mm:109,e:0},{y:2009,mo:12,mm:7,e:0},
   /* 2010 */ {y:2010,mo:1,mm:27,e:0},{y:2010,mo:2,mm:98,e:0},{y:2010,mo:3,mm:121,e:0},{y:2010,mo:4,mm:215,e:0},{y:2010,mo:5,mm:430,e:0},{y:2010,mo:6,mm:716,e:0},{y:2010,mo:7,mm:869,e:0},{y:2010,mo:8,mm:411,e:0},{y:2010,mo:9,mm:605,e:0},{y:2010,mo:10,mm:311,e:0},{y:2010,mo:11,mm:215,e:0},{y:2010,mo:12,mm:18,e:0},
@@ -102,14 +110,13 @@ const TELE = [
   /* 2022 */ {y:2022,mo:1,mm:65.5,e:0},{y:2022,mo:2,mm:109.6,e:0},{y:2022,mo:3,mm:106.8,e:0},{y:2022,mo:4,mm:189.8,e:0},{y:2022,mo:5,mm:263.1,e:0},{y:2022,mo:6,mm:435.9,e:0},{y:2022,mo:7,mm:306.4,e:0},{y:2022,mo:8,mm:366.3,e:0},{y:2022,mo:9,mm:197.1,e:0},{y:2022,mo:10,mm:276.1,e:0},{y:2022,mo:11,mm:158.2,e:0},{y:2022,mo:12,mm:148.2,e:0},
   /* 2023 */ {y:2023,mo:1,mm:50.5,e:0},{y:2023,mo:2,mm:83.4,e:0},{y:2023,mo:3,mm:180.1,e:0},{y:2023,mo:4,mm:151.6,e:0},{y:2023,mo:5,mm:251,e:0},{y:2023,mo:6,mm:220.3,e:0},{y:2023,mo:7,mm:164.1,e:0},{y:2023,mo:8,mm:52.5,e:0},{y:2023,mo:9,mm:18.5,e:0},{y:2023,mo:10,mm:31.6,e:0},{y:2023,mo:11,mm:165.1,e:0},{y:2023,mo:12,mm:91,e:0},
   /* 2024 */ {y:2024,mo:1,mm:139.8,e:0},{y:2024,mo:2,mm:78,e:0},{y:2024,mo:3,mm:147.2,e:0},{y:2024,mo:4,mm:380.5,e:0},{y:2024,mo:5,mm:450.2,e:0},{y:2024,mo:6,mm:256.1,e:0},{y:2024,mo:7,mm:470.9,e:0},{y:2024,mo:8,mm:131.3,e:0},{y:2024,mo:9,mm:116.6,e:0},{y:2024,mo:10,mm:137.2,e:0},{y:2024,mo:11,mm:185.7,e:0},{y:2024,mo:12,mm:126.4,e:0},
-  /* 2025 */ {y:2025,mo:1,mm:56,e:0},{y:2025,mo:2,mm:114,e:0},{y:2025,mo:3,mm:140.4,e:0},{y:2025,mo:4,mm:155.2,e:0},{y:2025,mo:5,mm:260.4,e:0},{y:2025,mo:6,mm:291.6,e:0},{y:2025,mo:7,mm:134,e:0},{y:2025,mo:8,mm:136.3,e:0},{y:2025,mo:9,mm:179,e:0},{y:2025,mo:10,mm:220.9,e:0},{y:2025,mo:11,mm:66.3,e:0},{y:2025,mo:12,mm:71.1,e:0},
-
+  /* 2025 */ {y:2025,mo:1,mm:56,e:0},{y:2025,mo:2,mm:114,e:0},{y:2025,mo:3,mm:140.4,e:0},{y:2025,mo:4,mm:155.2,e:0},{y:2025,mo:5,mm:260.4,e:0},{y:2025,mo:6,mm:291.6,e:0},{y:2025,mo:7,mm:134,e:0},{y:2025,mo:8,mm:136.3,e:0},{y:2025,mo:9,mm:179,e:0},{y:2025,mo:10,mm:220.9,e:0},{y:2025,mo:11,mm:66.3,e:0},{y:2025,mo:12,mm:71.1,e:0}
 ];
 // Data hujan terakhir yang tercatat di TELE, khusus untuk informasi riwayat dan validasi.
 const validRain=TELE.filter(t=>Number.isFinite(t.mm)&&t.mm>=0).sort((a,b)=>a.y-b.y||a.mo-b.mo);
 const ORIGIN=validRain[validRain.length-1] || {y:2025,mo:12,mm:null};
 // Data latih hujan tetap 2008–2025; tidak perlu menambahkan TELE setiap tahun.
-const TRAIN_START_YEAR=2008;
+const TRAIN_START_YEAR=2000;
 const TRAIN_END_YEAR=2025;
 const now=new Date();
 const REPORT_YEAR=now.getFullYear();
@@ -132,7 +139,7 @@ const NUM=s=>s!==''&&!isNaN(+s);
 const pSst=t=>{const o={};t.split(/\r?\n/).forEach(l=>{const p=l.trim().split(/\s+/);if(p.length>=10&&p.slice(0,10).every(NUM)){const y=+p[0],m=+p[1];if(y>1900&&m>=1&&m<=12)o[y+'-'+m]=+p[9]}});return o};
 const pRn=t=>{const o={};t.split(/\r?\n/).forEach(l=>{const p=l.trim().split(/\s+/);if(p.length===3&&p.every(NUM)){const y=+p[0],m=+p[1];if(y>1900&&m>=1&&m<=12)o[y+'-'+m]=+p[2]}});return o};
 /* Isi dengan URL web app Apps Script (/exec) milik Anda; jangan membagikan halaman ini bila URL terisi. */
-const BRIDGE_URL='https://script.google.com/macros/s/AKfycbww7coLTq4ZDrlhL3wt7HIJxo1LMDI_xp86V_oxUi8koyMYXsRvoEwVji5jU8587J1D/exec';
+const BRIDGE_URL='https://script.google.com/macros/s/AKfycbzOPy55IqN1WpswrbZQMDnDxgjVvdFq5TyozT6fZzQkSFWX0VgWYJQkLf54yELouQDO/exec';
 window.__b=null;
 const pBr=t=>{const j=JSON.parse(t);if(!j.ok)throw new Error('jembatan gagal');window.__b=j;return j.series};
 const SRC=[...(BRIDGE_URL?[{n:'Apps Script → NOAA CPC',u:BRIDGE_URL,p:pBr}]:[]),{n:'NOAA CPC · sstoi.indices',u:'https://www.cpc.ncep.noaa.gov/data/indices/sstoi.indices',p:pSst},{n:'NOAA CPC · Rnino34.ascii.txt',u:'https://www.cpc.ncep.noaa.gov/data/indices/Rnino34.ascii.txt',p:pRn}];
