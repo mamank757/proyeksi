@@ -115,7 +115,7 @@ const NUM=s=>s!==''&&!isNaN(+s);
 const pSst=t=>{const o={};t.split(/\r?\n/).forEach(l=>{const p=l.trim().split(/\s+/);if(p.length>=10&&p.slice(0,10).every(NUM)){const y=+p[0],m=+p[1];if(y>1900&&m>=1&&m<=12)o[y+'-'+m]=+p[9]}});return o};
 const pRn=t=>{const o={};t.split(/\r?\n/).forEach(l=>{const p=l.trim().split(/\s+/);if(p.length===3&&p.every(NUM)){const y=+p[0],m=+p[1];if(y>1900&&m>=1&&m<=12)o[y+'-'+m]=+p[2]}});return o};
 /* Isi dengan URL web app Apps Script (/exec) milik Anda; jangan membagikan halaman ini bila URL terisi. */
-const BRIDGE_URL='https://script.google.com/macros/s/AKfycbww7coLTq4ZDrlhL3wt7HIJxo1LMDI_xp86V_oxUi8koyMYXsRvoEwVji5jU8587J1D/exec';
+const BRIDGE_URL='https://script.google.com/macros/s/AKfycbxMNUR0S08of0jvdHCIGCr6YOE_72N-Wgathb5HnChCgYztLiohE1NKqaHVmj4y1_HU/exec';
 window.__b=null;
 const pBr=t=>{const j=JSON.parse(t);if(!j.ok)throw new Error('jembatan gagal');window.__b=j;return j.series};
 const SRC=[...(BRIDGE_URL?[{n:'Apps Script → NOAA CPC',u:BRIDGE_URL,p:pBr}]:[]),{n:'NOAA CPC · sstoi.indices',u:'https://www.cpc.ncep.noaa.gov/data/indices/sstoi.indices',p:pSst},{n:'NOAA CPC · Rnino34.ascii.txt',u:'https://www.cpc.ncep.noaa.gov/data/indices/Rnino34.ascii.txt',p:pRn}];
