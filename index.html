@@ -99,7 +99,7 @@ const NUM=s=>s!==''&&!isNaN(+s);
 const pSst=t=>{const o={};t.split(/\r?\n/).forEach(l=>{const p=l.trim().split(/\s+/);if(p.length>=10&&p.slice(0,10).every(NUM)){const y=+p[0],m=+p[1];if(y>1900&&m>=1&&m<=12)o[y+'-'+m]=+p[9]}});return o};
 const pRn=t=>{const o={};t.split(/\r?\n/).forEach(l=>{const p=l.trim().split(/\s+/);if(p.length===3&&p.every(NUM)){const y=+p[0],m=+p[1];if(y>1900&&m>=1&&m<=12)o[y+'-'+m]=+p[2]}});return o};
 /* Isi dengan URL web app Apps Script (/exec) milik Anda; jangan membagikan halaman ini bila URL terisi. */
-const BRIDGE_URL='';
+const BRIDGE_URL='https://script.google.com/macros/s/AKfycbxxdnEizEPdvYSztj4GYFuWogWrR94-LduAMFPczsk9j-PZU8j4AwjZ5NDot8txtwoi/exec';
 window.__b=null;
 const pBr=t=>{const j=JSON.parse(t);if(!j.ok)throw new Error('jembatan gagal');window.__b=j;return j.series};
 const SRC=[...(BRIDGE_URL?[{n:'Apps Script → NOAA CPC',u:BRIDGE_URL,p:pBr}]:[]),{n:'NOAA CPC · sstoi.indices',u:'https://www.cpc.ncep.noaa.gov/data/indices/sstoi.indices',p:pSst},{n:'NOAA CPC · Rnino34.ascii.txt',u:'https://www.cpc.ncep.noaa.gov/data/indices/Rnino34.ascii.txt',p:pRn}];
@@ -112,7 +112,7 @@ let L=-1;kn.forEach((k,i)=>{if(k)L=i});const off=L>=0?kn[L].v-MONTHS[L].snap:0;
 return MONTHS.map((m,i)=>kn[i]||{v:Math.round((m.snap+(L>=0?off*Math.max(0,1-(i-L)/12):0))*100)/100,s:'pro'})}
 const ensoOf=i=>manual?mv[MONTHS[i].m]:auto[i].v;
 async function load(){mode='load';errs=[];stat();
-for(const s of SRC){try{const d=s.p(await ft(s.u));if(!MONTHS.some(m=>d[key(m)]!==undefined))throw new Error('bulan target tidak ada');
+for(const s of SRC){try{const d=s.p(await ft(s.u));if(!Object.keys(d).length)throw new Error('data kosong');
 allObs=d;srcName=s.n;mode='live';fAt=new Date();const b=window.__b;fcst=(b&&b.forecast)||{};mtd=(b&&b.mtd)||{};fauto=(b&&b.forecastAuto)||{};
 try{localStorage.setItem(CK,JSON.stringify({allObs,fcst,mtd,fauto,srcName,t:fAt}))}catch(e){}return fin()}catch(e){errs.push(s.u.split('/').pop()+': '+(e.name==='AbortError'?'timeout':e.message))}}
 try{const c=JSON.parse(localStorage.getItem(CK)||'null');if(c&&c.allObs){({allObs,fcst,mtd,fauto,srcName}=c);fcst=fcst||{};mtd=mtd||{};fauto=fauto||{};fAt=new Date(c.t);mode='cache';return fin()}}catch(e){}
