@@ -120,50 +120,52 @@ footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--line);
 
 <script>
 // --- KONSTANTA & DATA DASAR ---
-const CLIM = [41,34,39,31,35,31,34,44,57,60,71,89,107,79,101,100,91,73,74,66,41,25,21,22,23,18,27,37,33,41,48,47,53,45,38,55];
-const NM = ['','JAN','FEB','MAR','APR','MEI','JUN','JUL','AGU','SEP','OKT','NOV','DES'];
-const FL = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-const SN = {10:2.22,11:2.47,12:2.39,1:2.28,2:1.96,3:1.56,4:.99,5:.41,6:.1,7:-.03,8:0,9:0};
-const NORM = mo => CLIM.slice((mo-1)*3, mo*3).reduce((a,b)=>a+b, 0);
+const CLIM=[41,34,39,31,35,31,34,44,57,60,71,89,107,79,101,100,91,73,74,66,41,25,21,22,23,18,27,37,33,41,48,47,53,45,38,55];
+const NM=['','JAN','FEB','MAR','APR','MEI','JUN','JUL','AGU','SEP','OKT','NOV','DES'];
+const FL=['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const SN={10:2.22,11:2.47,12:2.39,1:2.28,2:1.96,3:1.56,4:.99,5:.41,6:.1,7:-.03,8:0,9:0};
 
 const TELE = [
-  {y:1997,mo:1,mm:32,e:0},{y:1997,mo:2,mm:23,e:0},{y:1997,mo:3,mm:184,e:0},{y:1997,mo:4,mm:0,e:0},{y:1997,mo:5,mm:219,e:0},{y:1997,mo:6,mm:234,e:0},{y:1997,mo:7,mm:166,e:0},{y:1997,mo:8,mm:0,e:0},{y:1997,mo:9,mm:0,e:0},{y:1997,mo:10,mm:0,e:0},{y:1997,mo:11,mm:161,e:0},{y:1997,mo:12,mm:58,e:0},
-  {y:1998,mo:1,mm:99,e:0},{y:1998,mo:2,mm:198,e:0},{y:1998,mo:3,mm:268,e:0},{y:1998,mo:4,mm:515,e:0},{y:1998,mo:5,mm:0,e:0},{y:1998,mo:6,mm:290,e:0},{y:1998,mo:7,mm:694,e:0},{y:1998,mo:8,mm:454,e:0},{y:1998,mo:9,mm:114,e:0},{y:1998,mo:10,mm:261,e:0},{y:1998,mo:11,mm:154,e:0},{y:1998,mo:12,mm:0,e:0},
-  {y:1999,mo:1,mm:77,e:0},{y:1999,mo:2,mm:28,e:0},{y:1999,mo:3,mm:120,e:0},{y:1999,mo:4,mm:61,e:0},{y:1999,mo:5,mm:356,e:0},{y:1999,mo:6,mm:358,e:0},{y:1999,mo:7,mm:226,e:0},{y:1999,mo:8,mm:192,e:0},{y:1999,mo:9,mm:41,e:0},{y:1999,mo:10,mm:0,e:0},{y:1999,mo:11,mm:0,e:0},{y:1999,mo:12,mm:67,e:0},
-  {y:2000,mo:1,mm:60,e:0},{y:2000,mo:2,mm:12,e:0},{y:2000,mo:3,mm:99,e:0},{y:2000,mo:4,mm:108,e:0},{y:2000,mo:5,mm:160,e:0},{y:2000,mo:6,mm:637,e:0},{y:2000,mo:7,mm:244,e:0},{y:2000,mo:8,mm:164,e:0},{y:2000,mo:9,mm:118,e:0},{y:2000,mo:10,mm:175,e:0},{y:2000,mo:11,mm:148,e:0},{y:2000,mo:12,mm:67,e:0},
-  {y:2001,mo:1,mm:226,e:0},{y:2001,mo:2,mm:101,e:0},{y:2001,mo:3,mm:138,e:0},{y:2001,mo:4,mm:396,e:0},{y:2001,mo:5,mm:223,e:0},{y:2001,mo:6,mm:388,e:0},{y:2001,mo:7,mm:84,e:0},{y:2001,mo:8,mm:37,e:0},{y:2001,mo:9,mm:227,e:0},{y:2001,mo:10,mm:56,e:0},{y:2001,mo:11,mm:136,e:0},{y:2001,mo:12,mm:113,e:0},
-  {y:2002,mo:1,mm:244,e:0},{y:2002,mo:2,mm:66,e:0},{y:2002,mo:3,mm:139,e:0},{y:2002,mo:4,mm:314,e:0},{y:2002,mo:5,mm:397,e:0},{y:2002,mo:6,mm:305,e:0},{y:2002,mo:7,mm:43,e:0},{y:2002,mo:8,mm:18,e:0},{y:2002,mo:9,mm:0,e:0},{y:2002,mo:10,mm:0,e:0},{y:2002,mo:11,mm:110,e:0},{y:2002,mo:12,mm:277,e:0},
-  {y:2003,mo:1,mm:91,e:0},{y:2003,mo:2,mm:0,e:0},{y:2003,mo:3,mm:0,e:0},{y:2003,mo:4,mm:614,e:0},{y:2003,mo:5,mm:325,e:0},{y:2003,mo:6,mm:442,e:0},{y:2003,mo:7,mm:370,e:0},{y:2003,mo:8,mm:233,e:0},{y:2003,mo:9,mm:143,e:0},{y:2003,mo:10,mm:41,e:0},{y:2003,mo:11,mm:142,e:0},{y:2003,mo:12,mm:262,e:0},
-  {y:2006,mo:1,mm:0,e:0},{y:2006,mo:2,mm:158,e:0},{y:2006,mo:3,mm:194,e:0},{y:2006,mo:4,mm:117,e:0},{y:2006,mo:5,mm:245,e:0},{y:2006,mo:6,mm:412,e:0},{y:2006,mo:7,mm:31,e:0},{y:2006,mo:8,mm:11,e:0},{y:2006,mo:9,mm:10,e:0},{y:2006,mo:10,mm:0,e:0},{y:2006,mo:11,mm:175,e:0},{y:2006,mo:12,mm:110,e:0},
-  {y:2007,mo:1,mm:29,e:0},{y:2007,mo:2,mm:90,e:0},{y:2007,mo:3,mm:95,e:0},{y:2007,mo:4,mm:182,e:0},{y:2007,mo:5,mm:475,e:0},{y:2007,mo:6,mm:576,e:0},{y:2007,mo:7,mm:205,e:0},{y:2007,mo:8,mm:142,e:0},{y:2007,mo:9,mm:12,e:0},{y:2007,mo:10,mm:98,e:0},{y:2007,mo:11,mm:187,e:0},{y:2007,mo:12,mm:108,e:0},
-  {y:2008,mo:1,mm:114,e:0},{y:2008,mo:2,mm:5,e:0},{y:2008,mo:3,mm:269,e:0},{y:2008,mo:4,mm:329,e:0},{y:2008,mo:5,mm:356,e:0},{y:2008,mo:6,mm:276,e:0},{y:2008,mo:7,mm:478,e:0},{y:2008,mo:8,mm:263,e:0},{y:2008,mo:9,mm:99,e:0},{y:2008,mo:10,mm:194,e:0},{y:2008,mo:11,mm:139,e:0},{y:2008,mo:12,mm:70,e:0},
-  {y:2009,mo:1,mm:22,e:0},{y:2009,mo:2,mm:0,e:0},{y:2009,mo:3,mm:127,e:0},{y:2009,mo:4,mm:115,e:0},{y:2009,mo:5,mm:157,e:0},{y:2009,mo:6,mm:95,e:0},{y:2009,mo:7,mm:93,e:0},{y:2009,mo:8,mm:0,e:0},{y:2009,mo:9,mm:33,e:0},{y:2009,mo:10,mm:83,e:0},{y:2009,mo:11,mm:109,e:0},{y:2009,mo:12,mm:7,e:0},
-  {y:2010,mo:1,mm:27,e:0},{y:2010,mo:2,mm:98,e:0},{y:2010,mo:3,mm:121,e:0},{y:2010,mo:4,mm:215,e:0},{y:2010,mo:5,mm:430,e:0},{y:2010,mo:6,mm:716,e:0},{y:2010,mo:7,mm:869,e:0},{y:2010,mo:8,mm:411,e:0},{y:2010,mo:9,mm:605,e:0},{y:2010,mo:10,mm:311,e:0},{y:2010,mo:11,mm:215,e:0},{y:2010,mo:12,mm:18,e:0},
-  {y:2011,mo:1,mm:21,e:0},{y:2011,mo:2,mm:32,e:0},{y:2011,mo:3,mm:35,e:0},{y:2011,mo:4,mm:127,e:0},{y:2011,mo:5,mm:293,e:0},{y:2011,mo:6,mm:154,e:0},{y:2011,mo:7,mm:154,e:0},{y:2011,mo:8,mm:70,e:0},{y:2011,mo:9,mm:81,e:0},{y:2011,mo:10,mm:359,e:0},{y:2011,mo:11,mm:248,e:0},{y:2011,mo:12,mm:86,e:0},
-  {y:2012,mo:1,mm:4,e:0},{y:2012,mo:2,mm:149,e:0},{y:2012,mo:3,mm:131,e:0},{y:2012,mo:4,mm:329,e:0},{y:2012,mo:5,mm:252,e:0},{y:2012,mo:6,mm:130,e:0},{y:2012,mo:7,mm:221,e:0},{y:2012,mo:8,mm:24,e:0},{y:2012,mo:9,mm:17,e:0},{y:2012,mo:10,mm:251,e:0},{y:2012,mo:11,mm:93,e:0},{y:2012,mo:12,mm:127,e:0},
-  {y:2013,mo:1,mm:37,e:0},{y:2013,mo:2,mm:54,e:0},{y:2013,mo:3,mm:54,e:0},{y:2013,mo:4,mm:288,e:0},{y:2013,mo:5,mm:400,e:0},{y:2013,mo:6,mm:204,e:0},{y:2013,mo:7,mm:566,e:0},{y:2013,mo:8,mm:195,e:0},{y:2013,mo:9,mm:114,e:0},{y:2013,mo:10,mm:114,e:0},{y:2013,mo:11,mm:183,e:0},{y:2013,mo:12,mm:100,e:0},
-  {y:2014,mo:1,mm:56,e:0},{y:2014,mo:2,mm:31,e:0},{y:2014,mo:3,mm:53,e:0},{y:2014,mo:4,mm:32,e:0},{y:2014,mo:5,mm:417,e:0},{y:2014,mo:6,mm:415,e:0},{y:2014,mo:7,mm:107,e:0},{y:2014,mo:8,mm:115,e:0},{y:2014,mo:9,mm:0,e:0},{y:2014,mo:10,mm:42,e:0},{y:2014,mo:11,mm:54,e:0},{y:2014,mo:12,mm:118,e:0},
-  {y:2015,mo:1,mm:11,e:0},{y:2015,mo:2,mm:77,e:0},{y:2015,mo:3,mm:132,e:0},{y:2015,mo:4,mm:305,e:0},{y:2015,mo:5,mm:306,e:0},{y:2015,mo:6,mm:304,e:0},{y:2015,mo:7,mm:21,e:0},{y:2015,mo:8,mm:5,e:0},{y:2015,mo:9,mm:37,e:0},{y:2015,mo:10,mm:0,e:0},{y:2015,mo:11,mm:8,e:0},{y:2015,mo:12,mm:95,e:0},
-  {y:2016,mo:1,mm:131,e:0},{y:2016,mo:2,mm:164,e:0},{y:2016,mo:3,mm:134,e:0},{y:2016,mo:4,mm:410,e:0},{y:2016,mo:5,mm:449,e:0},{y:2016,mo:6,mm:289,e:0},{y:2016,mo:7,mm:115,e:0},{y:2016,mo:8,mm:26,e:0},{y:2016,mo:9,mm:156,e:0},{y:2016,mo:10,mm:226,e:0},{y:2016,mo:11,mm:390,e:0},{y:2016,mo:12,mm:14,e:0},
-  {y:2017,mo:1,mm:7,e:0},{y:2017,mo:2,mm:172,e:0},{y:2017,mo:3,mm:121,e:0},{y:2017,mo:4,mm:135,e:0},{y:2017,mo:5,mm:615,e:0},{y:2017,mo:6,mm:229,e:0},{y:2017,mo:7,mm:257,e:0},{y:2017,mo:8,mm:128,e:0},{y:2017,mo:9,mm:128,e:0},{y:2017,mo:10,mm:330,e:0},{y:2017,mo:11,mm:14,e:0},{y:2017,mo:12,mm:36,e:0},
-  {y:2018,mo:1,mm:146,e:0},{y:2018,mo:2,mm:73,e:0},{y:2018,mo:3,mm:113,e:0},{y:2018,mo:4,mm:231,e:0},{y:2018,mo:5,mm:401,e:0},{y:2018,mo:6,mm:411,e:0},{y:2018,mo:7,mm:144,e:0},{y:2018,mo:8,mm:7,e:0},{y:2018,mo:9,mm:49,e:0},{y:2018,mo:10,mm:57,e:0},{y:2018,mo:11,mm:133,e:0},{y:2018,mo:12,mm:16,e:0},
-  {y:2019,mo:1,mm:118.7,e:0},{y:2019,mo:2,mm:62.1,e:0},{y:2019,mo:3,mm:102.9,e:0},{y:2019,mo:4,mm:341,e:0},{y:2019,mo:5,mm:238.9,e:0},{y:2019,mo:6,mm:361.5,e:0},{y:2019,mo:7,mm:39,e:0},{y:2019,mo:8,mm:47.5,e:0},{y:2019,mo:9,mm:74,e:0},{y:2019,mo:10,mm:41,e:0},{y:2019,mo:11,mm:25,e:0},{y:2019,mo:12,mm:117.5,e:0},
-  {y:2020,mo:1,mm:154.5,e:0},{y:2020,mo:2,mm:133.8,e:0},{y:2020,mo:3,mm:160.3,e:0},{y:2020,mo:4,mm:240.6,e:0},{y:2020,mo:5,mm:403.6,e:0},{y:2020,mo:6,mm:449.5,e:0},{y:2020,mo:7,mm:550.8,e:0},{y:2020,mo:8,mm:74,e:0},{y:2020,mo:9,mm:243.1,e:0},{y:2020,mo:10,mm:135.3,e:0},{y:2020,mo:11,mm:155.3,e:0},{y:2020,mo:12,mm:83.3,e:0},
-  {y:2021,mo:1,mm:136.4,e:0},{y:2021,mo:2,mm:47.6,e:0},{y:2021,mo:3,mm:113.7,e:0},{y:2021,mo:4,mm:90.2,e:0},{y:2021,mo:5,mm:458.9,e:0},{y:2021,mo:6,mm:326.6,e:0},{y:2021,mo:7,mm:325.3,e:0},{y:2021,mo:8,mm:590.5,e:0},{y:2021,mo:9,mm:260.9,e:0},{y:2021,mo:10,mm:216.3,e:0},{y:2021,mo:11,mm:252.3,e:0},{y:2021,mo:12,mm:138.9,e:0},
-  {y:2022,mo:1,mm:65.5,e:0},{y:2022,mo:2,mm:109.6,e:0},{y:2022,mo:3,mm:106.8,e:0},{y:2022,mo:4,mm:189.8,e:0},{y:2022,mo:5,mm:263.1,e:0},{y:2022,mo:6,mm:435.9,e:0},{y:2022,mo:7,mm:306.4,e:0},{y:2022,mo:8,mm:366.3,e:0},{y:2022,mo:9,mm:197.1,e:0},{y:2022,mo:10,mm:276.1,e:0},{y:2022,mo:11,mm:158.2,e:0},{y:2022,mo:12,mm:148.2,e:0},
-  {y:2023,mo:1,mm:50.5,e:0},{y:2023,mo:2,mm:83.4,e:0},{y:2023,mo:3,mm:180.1,e:0},{y:2023,mo:4,mm:151.6,e:0},{y:2023,mo:5,mm:251,e:0},{y:2023,mo:6,mm:220.3,e:0},{y:2023,mo:7,mm:164.1,e:0},{y:2023,mo:8,mm:52.5,e:0},{y:2023,mo:9,mm:18.5,e:0},{y:2023,mo:10,mm:31.6,e:0},{y:2023,mo:11,mm:165.1,e:0},{y:2023,mo:12,mm:91,e:0},
-  {y:2024,mo:1,mm:139.8,e:0},{y:2024,mo:2,mm:78,e:0},{y:2024,mo:3,mm:147.2,e:0},{y:2024,mo:4,mm:380.5,e:0},{y:2024,mo:5,mm:450.2,e:0},{y:2024,mo:6,mm:256.1,e:0},{y:2024,mo:7,mm:470.9,e:0},{y:2024,mo:8,mm:131.3,e:0},{y:2024,mo:9,mm:116.6,e:0},{y:2024,mo:10,mm:137.2,e:0},{y:2024,mo:11,mm:185.7,e:0},{y:2024,mo:12,mm:126.4,e:0},
-  {y:2025,mo:1,mm:56,e:0},{y:2025,mo:2,mm:114,e:0},{y:2025,mo:3,mm:140.4,e:0},{y:2025,mo:4,mm:155.2,e:0},{y:2025,mo:5,mm:260.4,e:0},{y:2025,mo:6,mm:291.6,e:0},{y:2025,mo:7,mm:134,e:0},{y:2025,mo:8,mm:136.3,e:0},{y:2025,mo:9,mm:179,e:0},{y:2025,mo:10,mm:220.9,e:0},{y:2025,mo:11,mm:66.3,e:0},{y:2025,mo:12,mm:71.1,e:0},
-  {y:2026,mo:1,mm:26.3,e:0},{y:2026,mo:2,mm:58.1,e:0},{y:2026,mo:3,mm:76.9,e:0},{y:2026,mo:4,mm:174.4,e:0},{y:2026,mo:5,mm:390.8,e:0},{y:2026,mo:6,mm:206.6,e:0},{y:2026,mo:7,mm:25.7,e:0},{y:2026,mo:8,mm:1.8,e:0},{y:2026,mo:9,mm:3.6,e:0},{y:2026,mo:10,mm:0,e:0}
+  /* 1997 */ {y:1997,mo:1,mm:32,e:0},{y:1997,mo:2,mm:23,e:0},{y:1997,mo:3,mm:184,e:0},{y:1997,mo:4,mm:0,e:0},{y:1997,mo:5,mm:219,e:0},{y:1997,mo:6,mm:234,e:0},{y:1997,mo:7,mm:166,e:0},{y:1997,mo:8,mm:0,e:0},{y:1997,mo:9,mm:0,e:0},{y:1997,mo:10,mm:0,e:0},{y:1997,mo:11,mm:161,e:0},{y:1997,mo:12,mm:58,e:0},
+  /* 1998 */ {y:1998,mo:1,mm:99,e:0},{y:1998,mo:2,mm:198,e:0},{y:1998,mo:3,mm:268,e:0},{y:1998,mo:4,mm:515,e:0},{y:1998,mo:5,mm:0,e:0},{y:1998,mo:6,mm:290,e:0},{y:1998,mo:7,mm:694,e:0},{y:1998,mo:8,mm:454,e:0},{y:1998,mo:9,mm:114,e:0},{y:1998,mo:10,mm:261,e:0},{y:1998,mo:11,mm:154,e:0},{y:1998,mo:12,mm:0,e:0},
+  /* 1999 */ {y:1999,mo:1,mm:77,e:0},{y:1999,mo:2,mm:28,e:0},{y:1999,mo:3,mm:120,e:0},{y:1999,mo:4,mm:61,e:0},{y:1999,mo:5,mm:356,e:0},{y:1999,mo:6,mm:358,e:0},{y:1999,mo:7,mm:226,e:0},{y:1999,mo:8,mm:192,e:0},{y:1999,mo:9,mm:41,e:0},{y:1999,mo:10,mm:0,e:0},{y:1999,mo:11,mm:0,e:0},{y:1999,mo:12,mm:67,e:0},
+  /* 2000 */ {y:2000,mo:1,mm:60,e:0},{y:2000,mo:2,mm:12,e:0},{y:2000,mo:3,mm:99,e:0},{y:2000,mo:4,mm:108,e:0},{y:2000,mo:5,mm:160,e:0},{y:2000,mo:6,mm:637,e:0},{y:2000,mo:7,mm:244,e:0},{y:2000,mo:8,mm:164,e:0},{y:2000,mo:9,mm:118,e:0},{y:2000,mo:10,mm:175,e:0},{y:2000,mo:11,mm:148,e:0},{y:2000,mo:12,mm:67,e:0},
+  /* 2001 */ {y:2001,mo:1,mm:226,e:0},{y:2001,mo:2,mm:101,e:0},{y:2001,mo:3,mm:138,e:0},{y:2001,mo:4,mm:396,e:0},{y:2001,mo:5,mm:223,e:0},{y:2001,mo:6,mm:388,e:0},{y:2001,mo:7,mm:84,e:0},{y:2001,mo:8,mm:37,e:0},{y:2001,mo:9,mm:227,e:0},{y:2001,mo:10,mm:56,e:0},{y:2001,mo:11,mm:136,e:0},{y:2001,mo:12,mm:113,e:0},
+  /* 2002 */ {y:2002,mo:1,mm:244,e:0},{y:2002,mo:2,mm:66,e:0},{y:2002,mo:3,mm:139,e:0},{y:2002,mo:4,mm:314,e:0},{y:2002,mo:5,mm:397,e:0},{y:2002,mo:6,mm:305,e:0},{y:2002,mo:7,mm:43,e:0},{y:2002,mo:8,mm:18,e:0},{y:2002,mo:9,mm:0,e:0},{y:2002,mo:10,mm:0,e:0},{y:2002,mo:11,mm:110,e:0},{y:2002,mo:12,mm:277,e:0},
+  /* 2003 */ {y:2003,mo:1,mm:91,e:0},{y:2003,mo:2,mm:0,e:0},{y:2003,mo:3,mm:0,e:0},{y:2003,mo:4,mm:614,e:0},{y:2003,mo:5,mm:325,e:0},{y:2003,mo:6,mm:442,e:0},{y:2003,mo:7,mm:370,e:0},{y:2003,mo:8,mm:233,e:0},{y:2003,mo:9,mm:143,e:0},{y:2003,mo:10,mm:41,e:0},{y:2003,mo:11,mm:142,e:0},{y:2003,mo:12,mm:262,e:0},
+  /* 2006 */ {y:2006,mo:1,mm:0,e:0},{y:2006,mo:2,mm:158,e:0},{y:2006,mo:3,mm:194,e:0},{y:2006,mo:4,mm:117,e:0},{y:2006,mo:5,mm:245,e:0},{y:2006,mo:6,mm:412,e:0},{y:2006,mo:7,mm:31,e:0},{y:2006,mo:8,mm:11,e:0},{y:2006,mo:9,mm:10,e:0},{y:2006,mo:10,mm:0,e:0},{y:2006,mo:11,mm:175,e:0},{y:2006,mo:12,mm:110,e:0},
+  /* 2007 */ {y:2007,mo:1,mm:29,e:0},{y:2007,mo:2,mm:90,e:0},{y:2007,mo:3,mm:95,e:0},{y:2007,mo:4,mm:182,e:0},{y:2007,mo:5,mm:475,e:0},{y:2007,mo:6,mm:576,e:0},{y:2007,mo:7,mm:205,e:0},{y:2007,mo:8,mm:142,e:0},{y:2007,mo:9,mm:12,e:0},{y:2007,mo:10,mm:98,e:0},{y:2007,mo:11,mm:187,e:0},{y:2007,mo:12,mm:108,e:0},
+  /* 2008 */ {y:2008,mo:1,mm:114,e:0},{y:2008,mo:2,mm:5,e:0},{y:2008,mo:3,mm:269,e:0},{y:2008,mo:4,mm:329,e:0},{y:2008,mo:5,mm:356,e:0},{y:2008,mo:6,mm:276,e:0},{y:2008,mo:7,mm:478,e:0},{y:2008,mo:8,mm:263,e:0},{y:2008,mo:9,mm:99,e:0},{y:2008,mo:10,mm:194,e:0},{y:2008,mo:11,mm:139,e:0},{y:2008,mo:12,mm:70,e:0},
+  /* 2009 */ {y:2009,mo:1,mm:22,e:0},{y:2009,mo:2,mm:0,e:0},{y:2009,mo:3,mm:127,e:0},{y:2009,mo:4,mm:115,e:0},{y:2009,mo:5,mm:157,e:0},{y:2009,mo:6,mm:95,e:0},{y:2009,mo:7,mm:93,e:0},{y:2009,mo:8,mm:0,e:0},{y:2009,mo:9,mm:33,e:0},{y:2009,mo:10,mm:83,e:0},{y:2009,mo:11,mm:109,e:0},{y:2009,mo:12,mm:7,e:0},
+  /* 2010 */ {y:2010,mo:1,mm:27,e:0},{y:2010,mo:2,mm:98,e:0},{y:2010,mo:3,mm:121,e:0},{y:2010,mo:4,mm:215,e:0},{y:2010,mo:5,mm:430,e:0},{y:2010,mo:6,mm:716,e:0},{y:2010,mo:7,mm:869,e:0},{y:2010,mo:8,mm:411,e:0},{y:2010,mo:9,mm:605,e:0},{y:2010,mo:10,mm:311,e:0},{y:2010,mo:11,mm:215,e:0},{y:2010,mo:12,mm:18,e:0},
+  /* 2011 */ {y:2011,mo:1,mm:21,e:0},{y:2011,mo:2,mm:32,e:0},{y:2011,mo:3,mm:35,e:0},{y:2011,mo:4,mm:127,e:0},{y:2011,mo:5,mm:293,e:0},{y:2011,mo:6,mm:154,e:0},{y:2011,mo:7,mm:154,e:0},{y:2011,mo:8,mm:70,e:0},{y:2011,mo:9,mm:81,e:0},{y:2011,mo:10,mm:359,e:0},{y:2011,mo:11,mm:248,e:0},{y:2011,mo:12,mm:86,e:0},
+  /* 2012 */ {y:2012,mo:1,mm:4,e:0},{y:2012,mo:2,mm:149,e:0},{y:2012,mo:3,mm:131,e:0},{y:2012,mo:4,mm:329,e:0},{y:2012,mo:5,mm:252,e:0},{y:2012,mo:6,mm:130,e:0},{y:2012,mo:7,mm:221,e:0},{y:2012,mo:8,mm:24,e:0},{y:2012,mo:9,mm:17,e:0},{y:2012,mo:10,mm:251,e:0},{y:2012,mo:11,mm:93,e:0},{y:2012,mo:12,mm:127,e:0},
+  /* 2013 */ {y:2013,mo:1,mm:37,e:0},{y:2013,mo:2,mm:54,e:0},{y:2013,mo:3,mm:54,e:0},{y:2013,mo:4,mm:288,e:0},{y:2013,mo:5,mm:400,e:0},{y:2013,mo:6,mm:204,e:0},{y:2013,mo:7,mm:566,e:0},{y:2013,mo:8,mm:195,e:0},{y:2013,mo:9,mm:114,e:0},{y:2013,mo:10,mm:114,e:0},{y:2013,mo:11,mm:183,e:0},{y:2013,mo:12,mm:100,e:0},
+  /* 2014 */ {y:2014,mo:1,mm:56,e:0},{y:2014,mo:2,mm:31,e:0},{y:2014,mo:3,mm:53,e:0},{y:2014,mo:4,mm:32,e:0},{y:2014,mo:5,mm:417,e:0},{y:2014,mo:6,mm:415,e:0},{y:2014,mo:7,mm:107,e:0},{y:2014,mo:8,mm:115,e:0},{y:2014,mo:9,mm:0,e:0},{y:2014,mo:10,mm:42,e:0},{y:2014,mo:11,mm:54,e:0},{y:2014,mo:12,mm:118,e:0},
+  /* 2015 */ {y:2015,mo:1,mm:11,e:0},{y:2015,mo:2,mm:77,e:0},{y:2015,mo:3,mm:132,e:0},{y:2015,mo:4,mm:305,e:0},{y:2015,mo:5,mm:306,e:0},{y:2015,mo:6,mm:304,e:0},{y:2015,mo:7,mm:21,e:0},{y:2015,mo:8,mm:5,e:0},{y:2015,mo:9,mm:37,e:0},{y:2015,mo:10,mm:0,e:0},{y:2015,mo:11,mm:8,e:0},{y:2015,mo:12,mm:95,e:0},
+  /* 2016 */ {y:2016,mo:1,mm:131,e:0},{y:2016,mo:2,mm:164,e:0},{y:2016,mo:3,mm:134,e:0},{y:2016,mo:4,mm:410,e:0},{y:2016,mo:5,mm:449,e:0},{y:2016,mo:6,mm:289,e:0},{y:2016,mo:7,mm:115,e:0},{y:2016,mo:8,mm:26,e:0},{y:2016,mo:9,mm:156,e:0},{y:2016,mo:10,mm:226,e:0},{y:2016,mo:11,mm:390,e:0},{y:2016,mo:12,mm:14,e:0},
+  /* 2017 */ {y:2017,mo:1,mm:7,e:0},{y:2017,mo:2,mm:172,e:0},{y:2017,mo:3,mm:121,e:0},{y:2017,mo:4,mm:135,e:0},{y:2017,mo:5,mm:615,e:0},{y:2017,mo:6,mm:229,e:0},{y:2017,mo:7,mm:257,e:0},{y:2017,mo:8,mm:128,e:0},{y:2017,mo:9,mm:128,e:0},{y:2017,mo:10,mm:330,e:0},{y:2017,mo:11,mm:14,e:0},{y:2017,mo:12,mm:36,e:0},
+  /* 2018 */ {y:2018,mo:1,mm:146,e:0},{y:2018,mo:2,mm:73,e:0},{y:2018,mo:3,mm:113,e:0},{y:2018,mo:4,mm:231,e:0},{y:2018,mo:5,mm:401,e:0},{y:2018,mo:6,mm:411,e:0},{y:2018,mo:7,mm:144,e:0},{y:2018,mo:8,mm:7,e:0},{y:2018,mo:9,mm:49,e:0},{y:2018,mo:10,mm:57,e:0},{y:2018,mo:11,mm:133,e:0},{y:2018,mo:12,mm:16,e:0},
+  /* 2019 */ {y:2019,mo:1,mm:118.7,e:0},{y:2019,mo:2,mm:62.1,e:0},{y:2019,mo:3,mm:102.9,e:0},{y:2019,mo:4,mm:341,e:0},{y:2019,mo:5,mm:238.9,e:0},{y:2019,mo:6,mm:361.5,e:0},{y:2019,mo:7,mm:39,e:0},{y:2019,mo:8,mm:47.5,e:0},{y:2019,mo:9,mm:74,e:0},{y:2019,mo:10,mm:41,e:0},{y:2019,mo:11,mm:25,e:0},{y:2019,mo:12,mm:117.5,e:0},
+  /* 2020 */ {y:2020,mo:1,mm:154.5,e:0},{y:2020,mo:2,mm:133.8,e:0},{y:2020,mo:3,mm:160.3,e:0},{y:2020,mo:4,mm:240.6,e:0},{y:2020,mo:5,mm:403.6,e:0},{y:2020,mo:6,mm:449.5,e:0},{y:2020,mo:7,mm:550.8,e:0},{y:2020,mo:8,mm:74,e:0},{y:2020,mo:9,mm:243.1,e:0},{y:2020,mo:10,mm:135.3,e:0},{y:2020,mo:11,mm:155.3,e:0},{y:2020,mo:12,mm:83.3,e:0},
+  /* 2021 */ {y:2021,mo:1,mm:136.4,e:0},{y:2021,mo:2,mm:47.6,e:0},{y:2021,mo:3,mm:113.7,e:0},{y:2021,mo:4,mm:90.2,e:0},{y:2021,mo:5,mm:458.9,e:0},{y:2021,mo:6,mm:326.6,e:0},{y:2021,mo:7,mm:325.3,e:0},{y:2021,mo:8,mm:590.5,e:0},{y:2021,mo:9,mm:260.9,e:0},{y:2021,mo:10,mm:216.3,e:0},{y:2021,mo:11,mm:252.3,e:0},{y:2021,mo:12,mm:138.9,e:0},
+  /* 2022 */ {y:2022,mo:1,mm:65.5,e:0},{y:2022,mo:2,mm:109.6,e:0},{y:2022,mo:3,mm:106.8,e:0},{y:2022,mo:4,mm:189.8,e:0},{y:2022,mo:5,mm:263.1,e:0},{y:2022,mo:6,mm:435.9,e:0},{y:2022,mo:7,mm:306.4,e:0},{y:2022,mo:8,mm:366.3,e:0},{y:2022,mo:9,mm:197.1,e:0},{y:2022,mo:10,mm:276.1,e:0},{y:2022,mo:11,mm:158.2,e:0},{y:2022,mo:12,mm:148.2,e:0},
+  /* 2023 */ {y:2023,mo:1,mm:50.5,e:0},{y:2023,mo:2,mm:83.4,e:0},{y:2023,mo:3,mm:180.1,e:0},{y:2023,mo:4,mm:151.6,e:0},{y:2023,mo:5,mm:251,e:0},{y:2023,mo:6,mm:220.3,e:0},{y:2023,mo:7,mm:164.1,e:0},{y:2023,mo:8,mm:52.5,e:0},{y:2023,mo:9,mm:18.5,e:0},{y:2023,mo:10,mm:31.6,e:0},{y:2023,mo:11,mm:165.1,e:0},{y:2023,mo:12,mm:91,e:0},
+  /* 2024 */ {y:2024,mo:1,mm:139.8,e:0},{y:2024,mo:2,mm:78,e:0},{y:2024,mo:3,mm:147.2,e:0},{y:2024,mo:4,mm:380.5,e:0},{y:2024,mo:5,mm:450.2,e:0},{y:2024,mo:6,mm:256.1,e:0},{y:2024,mo:7,mm:470.9,e:0},{y:2024,mo:8,mm:131.3,e:0},{y:2024,mo:9,mm:116.6,e:0},{y:2024,mo:10,mm:137.2,e:0},{y:2024,mo:11,mm:185.7,e:0},{y:2024,mo:12,mm:126.4,e:0},
+  /* 2025 */ {y:2025,mo:1,mm:56,e:0},{y:2025,mo:2,mm:114,e:0},{y:2025,mo:3,mm:140.4,e:0},{y:2025,mo:4,mm:155.2,e:0},{y:2025,mo:5,mm:260.4,e:0},{y:2025,mo:6,mm:291.6,e:0},{y:2025,mo:7,mm:134,e:0},{y:2025,mo:8,mm:136.3,e:0},{y:2025,mo:9,mm:179,e:0},{y:2025,mo:10,mm:220.9,e:0},{y:2025,mo:11,mm:66.3,e:0},{y:2025,mo:12,mm:71.1,e:0},
+  /* 2026 */ {y:2026,mo:1,mm:26.3,e:0},{y:2026,mo:2,mm:58.1,e:0},{y:2026,mo:3,mm:76.9,e:0},{y:2026,mo:4,mm:174.4,e:0},{y:2026,mo:5,mm:390.8,e:0},{y:2026,mo:6,mm:206.6,e:0},{y:2026,mo:7,mm:25.7,e:0},{y:2026,mo:8,mm:1.8,e:0},{y:2026,mo:9,mm:3.6,e:0},{y:2026,mo:10,mm:0,e:0}
 ];
 
-// --- MESIN PERHITUNGAN & FETCH LIVE NOAA (Full Original Version) ---
-const TRAIN_MIN_Y=1998, TRAIN_MAX_Y=2025, E_LO=-2, E_HI=2.5, F_LO=.3, F_HI=2.5, T_MIN=1.65, ATT=.35;
-const RAIN=TELE.filter(t=>t.y>=TRAIN_MIN_Y&&t.y<=TRAIN_MAX_Y&&Number.isFinite(t.mm)&&t.mm>=0&&(t.mm>0||(t.mo>=7&&t.mo<=11)));
+/* ===== ENGINE v6 ===== */
+const TRAIN_MIN_Y=1998, NOWZ0=new Date().getFullYear()*12+new Date().getMonth(), SUSPECT_ZERO=['1999-10','1999-11'], E_LO=-2, E_HI=2.5, F_LO=.3, F_HI=2.5, T_MIN=1.65, ATT=.35;
+const RAIN_ALL=TELE.filter(t=>t.y>=TRAIN_MIN_Y&&!SUSPECT_ZERO.includes(t.y+'-'+t.mo)&&Number.isFinite(t.mm)&&t.mm>=0&&(t.mm>0||(t.mo>=7&&t.mo<=11)));
+const RAIN=RAIN_ALL.filter(t=>t.y*12+t.mo-1<NOWZ0);
 const CVD=.9, MIN_N_ENSO=8, SHRINK_K=8, TAU_ENSO=6;
 
 const now=new Date();
+const REPORT_YEAR=now.getFullYear();
 const MONTHS=Array.from({length:12},(_,i)=>{const z=now.getFullYear()*12+now.getMonth()+1+i,y=Math.floor(z/12),mo=z%12+1;return{m:NM[mo],full:FL[mo],y,mo,snap:SN[mo]??0}});
+const NORM=mo=>CLIM.slice((mo-1)*3,mo*3).reduce((a,b)=>a+b,0);
 
 function lg(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,.001208650973866179,-5.395239384953e-6];let y=x,t=x+5.5;t-=(x+.5)*Math.log(t);let s=1.000000000190015;for(const k of c)s+=k/++y;return -t+Math.log(2.5066282746310005*s/x)}
 function gp(a,x){if(x<=0)return 0;if(x<a+1){let ap=a,s=1/a,d=s;for(let n=0;n<300;n++){ap++;d*=x/ap;s+=d;if(Math.abs(d)<Math.abs(s)*1e-10)break}return s*Math.exp(-x+a*Math.log(x)-lg(a))}
@@ -174,8 +176,8 @@ function dist(rem,cv,off){if(rem<.01)return{p10:off,p90:off,a:null};const a=1/(c
 const key=m=>m.y+'-'+m.mo;
 const prevKeys=(y,mo)=>[1,2,3].map(k=>{const z=y*12+mo-1-k;return Math.floor(z/12)+'-'+(z%12+1)});
 function lagE(y,mo,map){const v=prevKeys(y,mo).map(k=>map[k]).filter(Number.isFinite);return v.length>=2?v.reduce((s,x)=>s+x,0)/v.length:null}
-function fit(mo,skipY){
-  const P=[];RAIN.forEach(t=>{if(t.mo!==mo||t.y===skipY)return;const x=lagE(t.y,t.mo,allObs);if(x!==null)P.push({x,y:t.mm})});
+
+function fitPairs(mo,P){
   const n=P.length,mu0=n?P.reduce((s,p)=>s+p.y,0)/n:NORM(mo);
   const R={n,mean:mu0>0?mu0:NORM(mo),a:Math.log(Math.max(mu0,1e-6)),b:0,ok:false,cv:.5,t:0};
   if(n<MIN_N_ENSO||!(mu0>0))return R;
@@ -196,7 +198,10 @@ function fit(mo,skipY){
   R.cv=Math.min(1.5,Math.max(.2,sd/R.mean));
   return R
 }
-
+function fit(mo){
+  const P=[];RAIN.forEach(t=>{if(t.mo!==mo)return;const x=lagE(t.y,t.mo,allObs);if(x!==null)P.push({x,y:t.mm})});
+  return fitPairs(mo,P)
+}
 function predict(f,e,att){
   const x=Math.max(E_LO,Math.min(E_HI,e))*att;
   const F=f.ok?Math.max(F_LO,Math.min(F_HI,Math.exp(f.a+f.b*x)/f.mean)):1;
@@ -210,14 +215,12 @@ function ensoAutoFor(monthList){
     fcst[key(m)]!==undefined?{v:fcst[key(m)],s:'fc'}:
     fauto[key(m)]!==undefined?{v:fauto[key(m)],s:'stat'}:null);
   let L=-1;kn.forEach((k,i)=>{if(k)L=i});const off=L>=0?kn[L].v-monthList[L].snap:0;
-  return monthList.map((m,i)=>kn[i]||{v:Math.round((L>=0?kn[L].v*Math.exp(-(i-L)/TAU_ENSO):0)*100)/100,s:'pro'})
-}
+  return monthList.map((m,i)=>kn[i]||{v:Math.round((L>=0?kn[L].v*Math.exp(-(i-L)/TAU_ENSO):0)*100)/100,s:'pro'})}
 
 function lagMap(){
   const z0=now.getFullYear()*12+now.getMonth()-14,ext=Array.from({length:30},(_,i)=>{const z=z0+i,y=Math.floor(z/12),mo=z%12+1;return{y,mo,snap:SN[mo]??0}});
   const map={...allObs};ensoAutoFor(ext).forEach((r,i)=>{if(map[key(ext[i])]===undefined)map[key(ext[i])]=r.v});
-  return map;
-}
+  return map}
 
 // Fetch Logic
 const NUM=s=>s!==''&&!isNaN(+s);
@@ -226,7 +229,7 @@ const pRn=t=>{const o={};t.split(/\r?\n/).forEach(l=>{const p=l.trim().split(/\s
 const BRIDGE_URL='https://script.google.com/macros/s/AKfycbxuPrth8vy5T7T5yk9BTnJDnbjfqKMumdzK2oydkAEAoFqlgPyMdge7XL3LMo68UBxlUg/exec';
 window.__b=null;
 const pBr=t=>{const j=JSON.parse(t);if(!j.ok)throw new Error('jembatan gagal');window.__b=j;return j.series};
-const SRC=[...(BRIDGE_URL?[{n:'NOAA CPC via Bridge',u:BRIDGE_URL,p:pBr}]:[]),{n:'NOAA CPC (sstoi)',u:'https://www.cpc.ncep.noaa.gov/data/indices/sstoi.indices',p:pSst},{n:'NOAA CPC (Rnino)',u:'https://www.cpc.ncep.noaa.gov/data/indices/Rnino34.ascii.txt',p:pRn}];
+const SRC=[...(BRIDGE_URL?[{n:'Apps Script → NOAA CPC',u:BRIDGE_URL,p:pBr}]:[]),{n:'NOAA CPC · sstoi.indices',u:'https://www.cpc.ncep.noaa.gov/data/indices/sstoi.indices',p:pSst},{n:'NOAA CPC · Rnino34.ascii.txt',u:'https://www.cpc.ncep.noaa.gov/data/indices/Rnino34.ascii.txt',p:pRn}];
 
 async function ft(u,ms=12000){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);try{const r=await fetch(u,{cache:'no-store',signal:c.signal});if(!r.ok)throw new Error('HTTP '+r.status);return await r.text()}finally{clearTimeout(t)}}
 
@@ -254,7 +257,6 @@ async function load(){
 function fin() {
   auto = ensoAutoFor(MONTHS);
   
-  const kb = document.getElementById('koneksi-box');
   const kd = document.getElementById('koneksi-dot');
   const kt = document.getElementById('koneksi-text');
   
@@ -269,24 +271,24 @@ function fin() {
   render();
 }
 
-function compute() {
-  const months = [];
-  const map = lagMap(), nowZ = now.getFullYear()*12+now.getMonth();
-  MONTHS.forEach((m, i) => {
-    const e = auto[i].v;
-    const f = fit(m.mo), lead = Math.max(0, m.y*12+m.mo-1-nowZ), x = lagE(m.y, m.mo, map), xe = x === null ? e : x;
-    const att = 1 - ATT * Math.min(1, Math.max(0, lead-1)/11);
-    const {F, mu} = predict(f, xe, att), Nm = f.mean, scale = Nm/NORM(m.mo);
-    
-    let mean = 0;
-    [0,1,2].forEach(d => { mean += (CLIM[(m.mo-1)*3+d]*scale)*F; });
-    
-    const cvm = Math.min(1.5, Math.sqrt(f.cv**2 + (.04*lead)**2)), ds = dist(mean, cvm, 0);
-    let pb = gp(ds.a, Math.max(0, .85*Nm/ds.th)), pa = 1 - gp(ds.a, Math.max(0, 1.15*Nm/ds.th));
-    pb = Math.max(0, Math.min(1, pb)); pa = Math.max(0, Math.min(1, pa));
-    const pn = Math.max(0, 1-pb-pa), cat = pb >= pn && pb >= pa ? 'bn' : pa >= pn ? 'an' : 'n';
-    
-    months.push({ m, e, Nm: Math.round(Nm), mean: Math.round(mean), cat });
+// Engine v6 Compute
+function compute(monthList=MONTHS,ensoValues=null){
+  const months=[],map=lagMap(),nowZ=now.getFullYear()*12+now.getMonth();
+  monthList.forEach((m,i)=>{
+    const e=ensoValues?ensoValues[i]:auto[i].v;
+    const f=fit(m.mo),lead=Math.max(0,m.y*12+m.mo-1-nowZ),x=lagE(m.y,m.mo,map),xe=x===null?e:x;
+    const att=1-ATT*Math.min(1,Math.max(0,lead-1)/11);
+    const {F,mu}=predict(f,xe,att),Nm=f.mean,scale=Nm/NORM(m.mo);
+    let mean=0;
+    [0,1,2].forEach(d=>{
+      const base=CLIM[(m.mo-1)*3+d]*scale,mn=base*F;
+      mean+=mn;
+    });
+    const cvm=Math.min(1.5,Math.sqrt(f.cv**2+(.04*lead)**2)),ds=dist(mean,cvm,0);
+    let pb=gp(ds.a,Math.max(0,.85*Nm/ds.th)),pa=1-gp(ds.a,Math.max(0,1.15*Nm/ds.th));
+    pb=Math.max(0,Math.min(1,pb));pa=Math.max(0,Math.min(1,pa));
+    const pn=Math.max(0,1-pb-pa),cat=pb>=pn&&pb>=pa?'bn':pa>=pn?'an':'n';
+    months.push({m,e,F,fitOK:f.ok,Nm:Math.round(Nm),mean:Math.round(mean),p10:Math.round(ds.p10),p90:Math.round(ds.p90),cat});
   });
   return months;
 }
@@ -300,8 +302,7 @@ function render() {
   
   const tb = forecastMonths.reduce((s,c) => s + c.Nm, 0);
   const tp = forecastMonths.reduce((s,c) => s + c.mean, 0);
-  const curM = MONTHS[0];
-  const eVal = auto[0].v;
+  const eVal = forecastMonths[0].e;
   const ph = eVal >= 0.5 ? 'El Niño (Cenderung Kering)' : eVal <= -0.5 ? 'La Niña (Cenderung Basah)' : 'Kondisi Netral';
 
   const st = [
@@ -316,6 +317,7 @@ function render() {
 
   chart(forecastMonths);
   mtab(forecastMonths);
+  document.getElementById('period').textContent = `Kabupaten Wajo · ${MONTHS[0].m} ${MONTHS[0].y} – ${MONTHS[11].m} ${MONTHS[11].y}`;
 }
 
 function chart(months) {
